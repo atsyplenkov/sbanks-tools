@@ -1,7 +1,7 @@
 # Sbanks
 
 <p align="center">
-     <a href="https://github.com/atsyplenkov/sbanks/.github/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/atsyplenkov/sbanks/ci.yml?style=flat&labelColor=1C2C2E&color=88AB26&logo=GitHub%20Actions&logoColor=white&label=CI"></a>
+     <a href="https://github.com/atsyplenkov/sbanks-tools/.github/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/atsyplenkov/sbanks-tools/ci.yml?style=flat&labelColor=1C2C2E&color=88AB26&logo=GitHub%20Actions&logoColor=white&label=CI"></a>
 </p>
 
 A QGIS 3+ and ArcGIS Pro Processing plugin that smooths 2D vector geometries using 1D linear filters with optional spline resampling for smoother output. It was initially designed for and works best with riverbanks mapped from satellite imageries (Landsat and Sentinel missions), which tend to produce zig-zag (pixelated) lines.
@@ -51,3 +51,6 @@ This code is open-source and licensed under the GPL-2.0+ license, see file [LICE
 If you use this plugin in your research, please cite the software as follows:
 
 > Tsyplenkov, A. (2026). Sbanks: Smooth vector geometries using Savitzky-Golay or Whittaker-Eilers filters [Software]. GitHub. https://github.com/atsyplenkov/sbanks-tools
+
+## Acknowledgements
+Portions of the smoothing logic were inspired by [**Zoltán Sylvester's**](https://github.com/zsylvester) work on river meandering and the [channelmapper](https://github.com/zsylvester/channelmapper) repository.
