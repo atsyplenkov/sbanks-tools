@@ -1,0 +1,34 @@
+name: ArcGIS CI
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  test-arcgis-core:
+    name: ArcGIS Core Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install numpy scipy pytest
+          pip install ./arcgis/vendor/sbanks-lib
+
+      - name: Run tests
+        working-directory: arcgis
+        run: pytest -v tests/

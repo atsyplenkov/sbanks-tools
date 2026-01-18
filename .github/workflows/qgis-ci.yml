@@ -1,4 +1,4 @@
-name: QGIS tests
+name: QGIS CI
 
 on:
   push:
@@ -10,6 +10,7 @@ on:
 
 jobs:
   test-qgis-ltr:
+    name: QGIS LTR Tests
     runs-on: ubuntu-latest
     container:
       image: qgis/qgis:ltr
