@@ -133,7 +133,7 @@ class SbanksAlgorithm(QgsProcessingAlgorithm):
         self.addParameter(
             QgsProcessingParameterFeatureSink(
                 self.OUTPUT,
-                self.tr('Smoothed layer')
+                self.tr('SG smoothed layer')
             )
         )
 

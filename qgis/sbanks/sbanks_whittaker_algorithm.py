@@ -142,7 +142,7 @@ class WhittakerAlgorithm(QgsProcessingAlgorithm):
         self.addParameter(
             QgsProcessingParameterFeatureSink(
                 self.OUTPUT,
-                self.tr('Smoothed layer')
+                self.tr('WE smoothed layer')
             )
         )
 
