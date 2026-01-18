@@ -47,6 +47,7 @@ from qgis.core import (
     QgsProcessing,
     QgsFeatureSink,
     QgsProcessingAlgorithm,
+    QgsProcessingParameterDefinition,
     QgsProcessingParameterFeatureSource,
     QgsProcessingParameterFeatureSink,
     QgsProcessingParameterNumber,
@@ -121,25 +122,29 @@ class WhittakerAlgorithm(QgsProcessingAlgorithm):
             )
         )
 
-        self.addParameter(
-            QgsProcessingParameterNumber(
-                self.SAMPLING_DISTANCE,
-                self.tr('Resampling distance'),
-                type=QgsProcessingParameterNumber.Double,
-                defaultValue=25.0,
-                minValue=0.001
-            )
+        sampling_distance_param = QgsProcessingParameterNumber(
+            self.SAMPLING_DISTANCE,
+            self.tr('Resampling distance'),
+            type=QgsProcessingParameterNumber.Double,
+            defaultValue=25.0,
+            minValue=0.001
         )
+        sampling_distance_param.setFlags(
+            sampling_distance_param.flags() | QgsProcessingParameterDefinition.FlagAdvanced
+        )
+        self.addParameter(sampling_distance_param)
 
-        self.addParameter(
-            QgsProcessingParameterNumber(
-                self.SMOOTHING_FACTOR,
-                self.tr('Spline smoothing factor'),
-                type=QgsProcessingParameterNumber.Double,
-                defaultValue=1.0,
-                minValue=0.0
-            )
+        smoothing_factor_param = QgsProcessingParameterNumber(
+            self.SMOOTHING_FACTOR,
+            self.tr('Spline smoothing factor'),
+            type=QgsProcessingParameterNumber.Double,
+            defaultValue=1.0,
+            minValue=0.0
         )
+        smoothing_factor_param.setFlags(
+            smoothing_factor_param.flags() | QgsProcessingParameterDefinition.FlagAdvanced
+        )
+        self.addParameter(smoothing_factor_param)
 
         self.addParameter(
             QgsProcessingParameterFeatureSink(
