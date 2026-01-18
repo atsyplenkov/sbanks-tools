@@ -5,9 +5,9 @@
      <a href="https://github.com/atsyplenkov/sbanks-tools/actions/workflows/arcgis-ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/atsyplenkov/sbanks-tools/arcgis-ci.yml?branch=master&style=flat&labelColor=1C2C2E&color=2C7AC3&logo=arcgis&logoColor=white&label=ArcGIS"></a>
 </p>
 
-A QGIS 3+ and ArcGIS Pro Processing plugin that smooths 2D vector geometries using 1D linear filters with optional spline resampling for smoother output. It was initially designed for and works best with riverbanks mapped from satellite imageries (Landsat and Sentinel missions), which tend to produce zig-zag (pixelated) lines.
+A QGIS 3+ and ArcGIS Pro Processing plugin that smooths 2D vector geometries using the [Savitzky-Golay](https://doi.org/10.1021/ac60214a047) (1964) and [Whittaker-Eilers](https://doi.org/10.1021/ac034173t) (2003) filters with optional spline resampling for smoother output. It was initially designed for and works best with riverbanks mapped from satellite imageries (Landsat and Sentinel missions), which tend to produce zig-zag (pixelated) lines.
 
-> Placeholder for nice figure
+![Application of the sbanks plugin in QGIS to filter and smooth Landsat-7 derived shoreline of the Krasnodar Reservoir.](assets/sbanks-example.png)
 
 ## Installation
 
