@@ -18,6 +18,11 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Install sbanks_core
+        run: pip install ./qgis/sbanks/vendor/sbanks-lib --break-system-packages
 
       - name: Install test dependencies
         run: pip install pytest --break-system-packages
