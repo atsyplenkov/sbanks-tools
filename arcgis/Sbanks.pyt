@@ -31,10 +31,10 @@ from sbanks_core.geometry import (
 
 
 class Toolbox:
-    """Sbanks Tools - Vector geometry smoothing toolbox."""
+    """sbanks - Vector geometry smoothing toolbox."""
 
     def __init__(self):
-        self.label = "Sbanks Tools"
+        self.label = "sbanks"
         self.alias = "sbanks"
         self.tools = [SavitzkyGolayFilter, WhittakerEilersFilter]
 

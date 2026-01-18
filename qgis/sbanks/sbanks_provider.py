@@ -73,7 +73,7 @@ class SbanksProvider(QgsProcessingProvider):
 
         This string should be short (e.g. "Lastools") and localised.
         """
-        return self.tr('Sbanks Tools')
+        return self.tr('sbanks')
 
     def icon(self):
         """
