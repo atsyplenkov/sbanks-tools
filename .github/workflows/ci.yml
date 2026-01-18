@@ -1,0 +1,28 @@
+name: QGIS tests
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  test-qgis-ltr:
+    runs-on: ubuntu-latest
+    container:
+      image: qgis/qgis:ltr
+      options: --user root
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install test dependencies
+        run: pip install pytest
+
+      - name: Run tests
+        env:
+          PYTHONPATH: ./qgis
+        run: xvfb-run -a pytest -v tests/test_algorithm.py
