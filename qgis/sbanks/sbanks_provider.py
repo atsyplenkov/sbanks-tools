@@ -28,6 +28,9 @@ __copyright__ = '(C) 2026 by Anatoly Tsyplenkov'
 
 __revision__ = '$Format:%H$'
 
+import os
+
+from qgis.PyQt.QtGui import QIcon
 from qgis.core import QgsProcessingProvider
 from .sbanks_algorithm import SbanksAlgorithm
 from .sbanks_whittaker_algorithm import WhittakerAlgorithm
@@ -77,7 +80,7 @@ class SbanksProvider(QgsProcessingProvider):
         Should return a QIcon which is used for your provider inside
         the Processing toolbox.
         """
-        return QgsProcessingProvider.icon(self)
+        return QIcon(os.path.join(os.path.dirname(__file__), 'icon.svg'))
 
     def longName(self):
         """

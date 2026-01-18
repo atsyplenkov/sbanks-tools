@@ -45,8 +45,8 @@ zip: clean
 	@echo "---------------------------"
 	@echo "Creating plugin zip bundle."
 	@echo "---------------------------"
-	@# Create zip excluding unwanted files
-	cd $(PLUGINNAME) && zip -9r ../$(PLUGINNAME).zip . \
+	@# Create zip with root folder, excluding unwanted files
+	zip -9r $(PLUGINNAME).zip $(PLUGINNAME) \
 		-x "*.pyc" \
 		-x "*/__pycache__/*" \
 		-x "*/.git" \
@@ -56,9 +56,9 @@ zip: clean
 		-x "*/test_*" \
 		-x "*/.pytest_cache/*" \
 		-x "*.egg-info/*" \
-		-x "vendor/sbanks-lib/setup.py" \
-		-x "vendor/sbanks-lib/pyproject.toml" \
-		-x "vendor/sbanks-lib/requirements.txt"
+		-x "$(PLUGINNAME)/vendor/sbanks-lib/setup.py" \
+		-x "$(PLUGINNAME)/vendor/sbanks-lib/pyproject.toml" \
+		-x "$(PLUGINNAME)/vendor/sbanks-lib/requirements.txt"
 	@echo "Created: $(PLUGINNAME).zip"
 
 deploy: clean
