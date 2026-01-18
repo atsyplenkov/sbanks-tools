@@ -1,0 +1,6 @@
+[submodule "qgis/sbanks/vendor/sbanks-lib"]
+	path = qgis/sbanks/vendor/sbanks-lib
+	url = https://github.com/atsyplenkov/sbanks-lib.git
+[submodule "arcgis/vendor/sbanks-lib"]
+	path = arcgis/vendor/sbanks-lib
+	url = https://github.com/atsyplenkov/sbanks-lib.git
