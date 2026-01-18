@@ -9,7 +9,7 @@ qgisMinimumVersion=3.0
 description=Smooth vector geometries using Savitzky-Golay or Whittaker-Eilers filters with optional spline resampling
 version=0.1
 author=Anatoly Tsyplenkov
-email=atsyplenkov@geogr.msu.ru
+email=hard.sign9115@fastmail.com
 
 about=The plugin performs vector geometry smoothing using Savitzky-Golay or Whittaker-Eilers filters with optional spline resampling. The Whittaker-Eilers filter supports distance-aware smoothing for unevenly spaced data. Uses the sbanks-core library for pure Python smoothing algorithms without additional dependencies.
 
