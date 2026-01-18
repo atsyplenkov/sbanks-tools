@@ -28,6 +28,7 @@ __copyright__ = '(C) 2026 by Anatoly Tsyplenkov'
 
 __revision__ = '$Format:%H$'
 
+import os
 import numpy as np
 
 # Import from sbanks_core library
@@ -41,6 +42,7 @@ from sbanks_core.geometry import (
 )
 
 from qgis.PyQt.QtCore import QCoreApplication
+from qgis.PyQt.QtGui import QIcon
 from qgis.core import (
     QgsProcessing,
     QgsFeatureSink,
@@ -466,6 +468,11 @@ class WhittakerAlgorithm(QgsProcessingAlgorithm):
     def displayName(self):
         """Return the translated algorithm name."""
         return self.tr('Whittaker-Eilers Filter')
+
+    def icon(self):
+        """Return the algorithm icon."""
+        icon_path = os.path.join(os.path.dirname(__file__), 'icon.svg')
+        return QIcon(icon_path)
 
     def shortHelpString(self):
         """Return a short help string for the algorithm."""

@@ -28,6 +28,8 @@ __copyright__ = '(C) 2026 by Anatoly Tsyplenkov'
 
 __revision__ = '$Format:%H$'
 
+import os
+
 import numpy as np
 
 # Import from sbanks_core library
@@ -35,6 +37,7 @@ from sbanks_core.savgol import smooth_open_geometry, smooth_closed_geometry
 from sbanks_core.geometry import resample_and_smooth, snap_endpoints
 
 from qgis.PyQt.QtCore import QCoreApplication
+from qgis.PyQt.QtGui import QIcon
 from qgis.core import (
     QgsProcessing,
     QgsFeatureSink,
@@ -408,6 +411,11 @@ class SbanksAlgorithm(QgsProcessingAlgorithm):
     def displayName(self):
         """Return the translated algorithm name."""
         return self.tr('Savitzky-Golay Filter')
+
+    def icon(self):
+        """Return the algorithm icon."""
+        icon_path = os.path.join(os.path.dirname(__file__), 'icon.svg')
+        return QIcon(icon_path)
 
     def shortHelpString(self):
         """Return a short help string for the algorithm."""
