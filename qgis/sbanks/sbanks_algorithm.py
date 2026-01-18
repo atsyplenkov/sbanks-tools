@@ -431,9 +431,7 @@ class SbanksAlgorithm(QgsProcessingAlgorithm):
             'using cubic spline interpolation.\n'
             '- Resampling distance: Target distance between points after resampling.\n'
             '- Spline smoothing factor: Controls the amount of smoothing applied '
-            'during spline interpolation.\n\n'
-            'For LineStrings, an anti-hook algorithm is applied to preserve '
-            'endpoint positions. For Polygons, wrap mode ensures smooth closure.'
+            'during spline interpolation.'
         )
 
     def tr(self, string):

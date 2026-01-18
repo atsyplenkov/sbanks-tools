@@ -491,9 +491,7 @@ class WhittakerAlgorithm(QgsProcessingAlgorithm):
             'during spline interpolation.\n\n'
             'The Whittaker-Eilers filter uses the actual distances between points, '
             'making it suitable for unevenly spaced data. For geographic CRS, '
-            'Haversine distances are used automatically.\n\n'
-            'For LineStrings, an anti-hook algorithm is applied to preserve '
-            'endpoint positions. For Polygons, circular padding ensures smooth closure.'
+            'Haversine distances are used automatically.'
         )
 
     def tr(self, string):
