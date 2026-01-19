@@ -1,4 +1,4 @@
-# Sbanks
+# sbanks
 
 <p align="center">
      <a href="https://github.com/atsyplenkov/sbanks-tools/actions/workflows/qgis-ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/atsyplenkov/sbanks-tools/qgis-ci.yml?branch=master&style=flat&labelColor=1C2C2E&color=88AB26&logo=QGIS&logoColor=white&label=QGIS"></a>
