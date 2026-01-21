@@ -33,7 +33,10 @@ import os
 import numpy as np
 
 # Import from sbanks_core library
-from sbanks_core.savgol import smooth_open_geometry, smooth_closed_geometry
+from sbanks_core.savgol import (
+    smooth_open_geometry_arclength,
+    smooth_closed_geometry_arclength,
+)
 from sbanks_core.geometry import resample_and_smooth, snap_endpoints
 
 from qgis.PyQt.QtCore import QCoreApplication
@@ -205,11 +208,14 @@ class SbanksAlgorithm(QgsProcessingAlgorithm):
                 feedback.setProgress(int(current * total))
                 continue
 
+            # Check if CRS is geographic
+            is_geographic = source.sourceCrs().isGeographic()
+
             # Process the geometry
             smoothed_geom = self._smooth_geometry(
                 geom, window_length, polyorder,
                 use_resampling, sampling_distance, smoothing_factor,
-                feedback
+                is_geographic, feedback
             )
 
             new_feature = QgsFeature(feature)
@@ -222,7 +228,7 @@ class SbanksAlgorithm(QgsProcessingAlgorithm):
 
     def _smooth_geometry(self, geometry, window_length, polyorder,
                          use_resampling, sampling_distance, smoothing_factor,
-                         feedback):
+                         is_geographic, feedback):
         """
         Smooth a geometry using Savitzky-Golay filter.
         """
@@ -239,7 +245,7 @@ class SbanksAlgorithm(QgsProcessingAlgorithm):
                 smoothed_part = self._smooth_single_geometry(
                     part, window_length, polyorder,
                     use_resampling, sampling_distance, smoothing_factor,
-                    geom_type, has_z, has_m, feedback
+                    geom_type, has_z, has_m, is_geographic, feedback
                 )
                 if smoothed_part:
                     smoothed_parts.append(smoothed_part)
@@ -259,7 +265,7 @@ class SbanksAlgorithm(QgsProcessingAlgorithm):
             smoothed = self._smooth_single_geometry(
                 geometry, window_length, polyorder,
                 use_resampling, sampling_distance, smoothing_factor,
-                geom_type, has_z, has_m, feedback
+                geom_type, has_z, has_m, is_geographic, feedback
             )
             if smoothed:
                 return QgsGeometry(smoothed)
@@ -268,7 +274,7 @@ class SbanksAlgorithm(QgsProcessingAlgorithm):
 
     def _smooth_single_geometry(self, geometry, window_length, polyorder,
                                  use_resampling, sampling_distance, smoothing_factor,
-                                 geom_type, has_z, has_m, feedback):
+                                 geom_type, has_z, has_m, is_geographic, feedback):
         """
         Smooth a single (non-multi) geometry.
         """
@@ -276,21 +282,21 @@ class SbanksAlgorithm(QgsProcessingAlgorithm):
             return self._smooth_linestring(
                 geometry, window_length, polyorder,
                 use_resampling, sampling_distance, smoothing_factor,
-                has_z, has_m, feedback
+                has_z, has_m, is_geographic, feedback
             )
         elif geom_type == QgsWkbTypes.PolygonGeometry:
             return self._smooth_polygon(
                 geometry, window_length, polyorder,
                 use_resampling, sampling_distance, smoothing_factor,
-                has_z, has_m, feedback
+                has_z, has_m, is_geographic, feedback
             )
         return None
 
     def _smooth_linestring(self, geometry, window_length, polyorder,
                            use_resampling, sampling_distance, smoothing_factor,
-                           has_z, has_m, feedback):
+                           has_z, has_m, is_geographic, feedback):
         """
-        Smooth a LineString geometry with anti-hook extrapolation.
+        Smooth a LineString geometry with arc-length parameterization.
         """
         line = geometry.constGet()
         if line is None:
@@ -310,8 +316,10 @@ class SbanksAlgorithm(QgsProcessingAlgorithm):
         x_start, y_start = x[0], y[0]
         x_end, y_end = x[-1], y[-1]
 
-        # Use sbanks_core smooth_open_geometry
-        x_smooth, y_smooth = smooth_open_geometry(x, y, window_length, polyorder)
+        # Use arc-length aware smoothing to avoid spike artifacts
+        x_smooth, y_smooth = smooth_open_geometry_arclength(
+            x, y, window_length, polyorder, is_geographic
+        )
 
         # Optional resampling
         if use_resampling:
@@ -329,9 +337,9 @@ class SbanksAlgorithm(QgsProcessingAlgorithm):
 
     def _smooth_polygon(self, geometry, window_length, polyorder,
                         use_resampling, sampling_distance, smoothing_factor,
-                        has_z, has_m, feedback):
+                        has_z, has_m, is_geographic, feedback):
         """
-        Smooth a Polygon geometry with wrap mode for closure.
+        Smooth a Polygon geometry with arc-length parameterization.
         """
         polygon = geometry.constGet()
         if polygon is None:
@@ -344,7 +352,7 @@ class SbanksAlgorithm(QgsProcessingAlgorithm):
         smoothed_exterior = self._smooth_ring(
             exterior_ring, window_length, polyorder,
             use_resampling, sampling_distance, smoothing_factor,
-            feedback
+            is_geographic, feedback
         )
 
         smoothed_interiors = []
@@ -353,7 +361,7 @@ class SbanksAlgorithm(QgsProcessingAlgorithm):
             smoothed_interior = self._smooth_ring(
                 interior_ring, window_length, polyorder,
                 use_resampling, sampling_distance, smoothing_factor,
-                feedback
+                is_geographic, feedback
             )
             smoothed_interiors.append(smoothed_interior)
 
@@ -366,9 +374,9 @@ class SbanksAlgorithm(QgsProcessingAlgorithm):
 
     def _smooth_ring(self, ring, window_length, polyorder,
                      use_resampling, sampling_distance, smoothing_factor,
-                     feedback):
+                     is_geographic, feedback):
         """
-        Smooth a polygon ring (closed curve) using wrap mode.
+        Smooth a polygon ring (closed curve) with arc-length parameterization.
         """
         n_points = ring.numPoints()
 
@@ -382,8 +390,10 @@ class SbanksAlgorithm(QgsProcessingAlgorithm):
         x = np.array([ring.pointN(i).x() for i in range(n_points - 1)])
         y = np.array([ring.pointN(i).y() for i in range(n_points - 1)])
 
-        # Use sbanks_core smooth_closed_geometry
-        x_smooth, y_smooth = smooth_closed_geometry(x, y, window_length, polyorder)
+        # Use arc-length aware smoothing to avoid spike artifacts
+        x_smooth, y_smooth = smooth_closed_geometry_arclength(
+            x, y, window_length, polyorder, is_geographic
+        )
 
         # Optional resampling
         if use_resampling:
