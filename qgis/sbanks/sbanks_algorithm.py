@@ -73,6 +73,7 @@ class SbanksAlgorithm(QgsProcessingAlgorithm):
 
     INPUT = "INPUT"
     OUTPUT = "OUTPUT"
+    MAX_SEGMENT_LENGTH = "MAX_SEGMENT_LENGTH"
     WINDOW_LENGTH = "WINDOW_LENGTH"
     POLYORDER = "POLYORDER"
     USE_RESAMPLING = "USE_RESAMPLING"
@@ -86,6 +87,16 @@ class SbanksAlgorithm(QgsProcessingAlgorithm):
                 self.INPUT,
                 self.tr("Input layer"),
                 [QgsProcessing.TypeVectorLine, QgsProcessing.TypeVectorPolygon],
+            )
+        )
+
+        self.addParameter(
+            QgsProcessingParameterNumber(
+                self.MAX_SEGMENT_LENGTH,
+                self.tr("Max segment length for densification (0 to disable)"),
+                type=QgsProcessingParameterNumber.Double,
+                defaultValue=60.0,
+                minValue=0.0,
             )
         )
 
@@ -150,6 +161,9 @@ class SbanksAlgorithm(QgsProcessingAlgorithm):
     def processAlgorithm(self, parameters, context, feedback):
         """Process the algorithm."""
         source = self.parameterAsSource(parameters, self.INPUT, context)
+        max_segment_length = self.parameterAsDouble(
+            parameters, self.MAX_SEGMENT_LENGTH, context
+        )
         window_length = self.parameterAsInt(parameters, self.WINDOW_LENGTH, context)
         polyorder = self.parameterAsInt(parameters, self.POLYORDER, context)
         use_resampling = self.parameterAsBool(parameters, self.USE_RESAMPLING, context)
@@ -159,6 +173,10 @@ class SbanksAlgorithm(QgsProcessingAlgorithm):
         smoothing_factor = self.parameterAsDouble(
             parameters, self.SMOOTHING_FACTOR, context
         )
+
+        # Convert 0 to None (disabled)
+        if max_segment_length == 0:
+            max_segment_length = None
 
         # Validate window_length is odd
         if window_length % 2 == 0:
@@ -222,6 +240,7 @@ class SbanksAlgorithm(QgsProcessingAlgorithm):
             # Process the geometry
             smoothed_geom = self._smooth_geometry(
                 geom,
+                max_segment_length,
                 window_length,
                 polyorder,
                 use_resampling,
@@ -241,6 +260,7 @@ class SbanksAlgorithm(QgsProcessingAlgorithm):
     def _smooth_geometry(
         self,
         geometry,
+        max_segment_length,
         window_length,
         polyorder,
         use_resampling,
@@ -263,6 +283,7 @@ class SbanksAlgorithm(QgsProcessingAlgorithm):
             for part in parts:
                 smoothed_part = self._smooth_single_geometry(
                     part,
+                    max_segment_length,
                     window_length,
                     polyorder,
                     use_resampling,
@@ -290,6 +311,7 @@ class SbanksAlgorithm(QgsProcessingAlgorithm):
         else:
             smoothed = self._smooth_single_geometry(
                 geometry,
+                max_segment_length,
                 window_length,
                 polyorder,
                 use_resampling,
@@ -308,6 +330,7 @@ class SbanksAlgorithm(QgsProcessingAlgorithm):
     def _smooth_single_geometry(
         self,
         geometry,
+        max_segment_length,
         window_length,
         polyorder,
         use_resampling,
@@ -324,6 +347,7 @@ class SbanksAlgorithm(QgsProcessingAlgorithm):
         if geom_type == QgsWkbTypes.LineGeometry:
             return self._smooth_linestring(
                 geometry,
+                max_segment_length,
                 window_length,
                 polyorder,
                 use_resampling,
@@ -336,6 +360,7 @@ class SbanksAlgorithm(QgsProcessingAlgorithm):
         elif geom_type == QgsWkbTypes.PolygonGeometry:
             return self._smooth_polygon(
                 geometry,
+                max_segment_length,
                 window_length,
                 polyorder,
                 use_resampling,
@@ -350,6 +375,7 @@ class SbanksAlgorithm(QgsProcessingAlgorithm):
     def _smooth_linestring(
         self,
         geometry,
+        max_segment_length,
         window_length,
         polyorder,
         use_resampling,
@@ -383,7 +409,9 @@ class SbanksAlgorithm(QgsProcessingAlgorithm):
         x_end, y_end = x[-1], y[-1]
 
         # Apply Savitzky-Golay smoothing with anti-hook padding
-        x_smooth, y_smooth = smooth_open_geometry(x, y, window_length, polyorder)
+        x_smooth, y_smooth = smooth_open_geometry(
+            x, y, window_length, polyorder, max_segment_length=max_segment_length
+        )
 
         # Optional resampling
         if use_resampling:
@@ -402,6 +430,7 @@ class SbanksAlgorithm(QgsProcessingAlgorithm):
     def _smooth_polygon(
         self,
         geometry,
+        max_segment_length,
         window_length,
         polyorder,
         use_resampling,
@@ -424,6 +453,7 @@ class SbanksAlgorithm(QgsProcessingAlgorithm):
 
         smoothed_exterior = self._smooth_ring(
             exterior_ring,
+            max_segment_length,
             window_length,
             polyorder,
             use_resampling,
@@ -437,6 +467,7 @@ class SbanksAlgorithm(QgsProcessingAlgorithm):
             interior_ring = polygon.interiorRing(i)
             smoothed_interior = self._smooth_ring(
                 interior_ring,
+                max_segment_length,
                 window_length,
                 polyorder,
                 use_resampling,
@@ -456,6 +487,7 @@ class SbanksAlgorithm(QgsProcessingAlgorithm):
     def _smooth_ring(
         self,
         ring,
+        max_segment_length,
         window_length,
         polyorder,
         use_resampling,
@@ -481,7 +513,9 @@ class SbanksAlgorithm(QgsProcessingAlgorithm):
         y = np.array([ring.pointN(i).y() for i in range(n_points - 1)])
 
         # Apply Savitzky-Golay smoothing with wrap mode for closed geometries
-        x_smooth, y_smooth = smooth_closed_geometry(x, y, window_length, polyorder)
+        x_smooth, y_smooth = smooth_closed_geometry(
+            x, y, window_length, polyorder, max_segment_length=max_segment_length
+        )
 
         # Optional resampling
         if use_resampling:
@@ -528,6 +562,10 @@ class SbanksAlgorithm(QgsProcessingAlgorithm):
             "Smooths vector geometries (LineStrings and Polygons) using the "
             "Savitzky-Golay filter.\n\n"
             "Parameters:\n"
+            "- Max segment length: Densifies sparse segments before smoothing. "
+            "Segments longer than this value will have points inserted via linear "
+            "interpolation. This prevents spike artifacts on geometries with uneven "
+            "vertex density (e.g., raster-derived polygons). Set to 0 to disable.\n"
             "- Window length: The length of the filter window (must be odd). "
             "Larger values produce smoother results.\n"
             "- Polynomial order: The order of the polynomial used to fit samples. "

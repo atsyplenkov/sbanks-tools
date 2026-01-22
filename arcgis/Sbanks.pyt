@@ -74,57 +74,67 @@ class SavitzkyGolayFilter:
             direction="Output"
         )
 
-        # Window Length
+        # Max Segment Length for Densification
         param2 = arcpy.Parameter(
+            displayName="Max Segment Length for Densification (0 to disable)",
+            name="max_segment_length",
+            datatype="GPDouble",
+            parameterType="Required",
+            direction="Input"
+        )
+        param2.value = 60.0
+
+        # Window Length
+        param3 = arcpy.Parameter(
             displayName="Window Length (must be odd)",
             name="window_length",
             datatype="GPLong",
             parameterType="Required",
             direction="Input"
         )
-        param2.value = 11
+        param3.value = 11
 
         # Polynomial Order
-        param3 = arcpy.Parameter(
+        param4 = arcpy.Parameter(
             displayName="Polynomial Order",
             name="polyorder",
             datatype="GPLong",
             parameterType="Required",
             direction="Input"
         )
-        param3.value = 3
+        param4.value = 3
 
         # Use Resampling
-        param4 = arcpy.Parameter(
+        param5 = arcpy.Parameter(
             displayName="Apply Spline Resampling",
             name="use_resampling",
             datatype="GPBoolean",
             parameterType="Optional",
             direction="Input"
         )
-        param4.value = True
+        param5.value = True
 
         # Sampling Distance
-        param5 = arcpy.Parameter(
+        param6 = arcpy.Parameter(
             displayName="Resampling Distance",
             name="sampling_distance",
             datatype="GPDouble",
             parameterType="Optional",
             direction="Input"
         )
-        param5.value = 25.0
+        param6.value = 25.0
 
         # Smoothing Factor
-        param6 = arcpy.Parameter(
+        param7 = arcpy.Parameter(
             displayName="Spline Smoothing Factor",
             name="smoothing_factor",
             datatype="GPDouble",
             parameterType="Optional",
             direction="Input"
         )
-        param6.value = 1.0
+        param7.value = 1.0
 
-        return [param0, param1, param2, param3, param4, param5, param6]
+        return [param0, param1, param2, param3, param4, param5, param6, param7]
 
     def isLicensed(self):
         """Set whether tool is licensed to execute."""
@@ -133,32 +143,36 @@ class SavitzkyGolayFilter:
     def updateParameters(self, parameters):
         """Modify the values and properties of parameters."""
         # Enable/disable resampling parameters based on checkbox
-        if parameters[4].value:
-            parameters[5].enabled = True
+        if parameters[5].value:
             parameters[6].enabled = True
+            parameters[7].enabled = True
         else:
-            parameters[5].enabled = False
             parameters[6].enabled = False
+            parameters[7].enabled = False
         return
 
     def updateMessages(self, parameters):
         """Modify the messages created by internal validation."""
+        # Validate max_segment_length is non-negative
+        if parameters[2].value is not None and parameters[2].value < 0:
+            parameters[2].setErrorMessage("Max segment length must be non-negative (0 to disable)")
+
         # Validate window length is odd
-        if parameters[2].value is not None:
-            if parameters[2].value % 2 == 0:
-                parameters[2].setWarningMessage(
+        if parameters[3].value is not None:
+            if parameters[3].value % 2 == 0:
+                parameters[3].setWarningMessage(
                     "Window length will be adjusted to {} (must be odd)".format(
-                        parameters[2].value + 1
+                        parameters[3].value + 1
                     )
                 )
-            if parameters[2].value < 3:
-                parameters[2].setErrorMessage("Window length must be at least 3")
+            if parameters[3].value < 3:
+                parameters[3].setErrorMessage("Window length must be at least 3")
 
         # Validate polyorder < window_length
-        if parameters[2].value is not None and parameters[3].value is not None:
-            window = parameters[2].value if parameters[2].value % 2 == 1 else parameters[2].value + 1
-            if parameters[3].value >= window:
-                parameters[3].setErrorMessage(
+        if parameters[3].value is not None and parameters[4].value is not None:
+            window = parameters[3].value if parameters[3].value % 2 == 1 else parameters[3].value + 1
+            if parameters[4].value >= window:
+                parameters[4].setErrorMessage(
                     "Polynomial order must be less than window length"
                 )
         return
@@ -167,11 +181,16 @@ class SavitzkyGolayFilter:
         """Execute the tool."""
         in_fc = parameters[0].valueAsText
         out_fc = parameters[1].valueAsText
-        window = parameters[2].value
-        order = parameters[3].value
-        resample = parameters[4].value if parameters[4].value else False
-        delta_s = parameters[5].value if parameters[5].value else 25.0
-        smooth_factor = parameters[6].value if parameters[6].value else 1.0
+        max_seg_len = parameters[2].value if parameters[2].value else 60.0
+        window = parameters[3].value
+        order = parameters[4].value
+        resample = parameters[5].value if parameters[5].value else False
+        delta_s = parameters[6].value if parameters[6].value else 25.0
+        smooth_factor = parameters[7].value if parameters[7].value else 1.0
+
+        # Convert 0 to None (disabled)
+        if max_seg_len == 0:
+            max_seg_len = None
 
         # Adjust window length if even
         if window % 2 == 0:
@@ -206,24 +225,24 @@ class SavitzkyGolayFilter:
                         continue
 
                     smoothed_geom = self._smooth_geometry(
-                        geom, window, order, resample, delta_s, smooth_factor
+                        geom, max_seg_len, window, order, resample, delta_s, smooth_factor
                     )
                     dst.insertRow([smoothed_geom] + list(row[1:]))
 
         arcpy.AddMessage(f"Successfully processed features to {out_fc}")
         return
 
-    def _smooth_geometry(self, geom, window, order, resample, delta_s, smooth_factor):
+    def _smooth_geometry(self, geom, max_seg_len, window, order, resample, delta_s, smooth_factor):
         """Smooth a geometry based on its type."""
         if geom is None:
             return geom
         if geom.type == "polyline":
-            return self._smooth_polyline(geom, window, order, resample, delta_s, smooth_factor)
+            return self._smooth_polyline(geom, max_seg_len, window, order, resample, delta_s, smooth_factor)
         elif geom.type == "polygon":
-            return self._smooth_polygon(geom, window, order, resample, delta_s, smooth_factor)
+            return self._smooth_polygon(geom, max_seg_len, window, order, resample, delta_s, smooth_factor)
         return geom
 
-    def _smooth_polyline(self, geom, window, order, resample, delta_s, smooth_factor):
+    def _smooth_polyline(self, geom, max_seg_len, window, order, resample, delta_s, smooth_factor):
         """Smooth a polyline geometry using Savitzky-Golay filter."""
         arr = arcpy.Array()
         for part in geom:
@@ -240,7 +259,9 @@ class SavitzkyGolayFilter:
             x_e, y_e = x[-1], y[-1]
 
             # Apply Savitzky-Golay smoothing with anti-hook padding
-            x_sm, y_sm = smooth_open_geometry(x, y, window, order)
+            x_sm, y_sm = smooth_open_geometry(
+                x, y, window, order, max_segment_length=max_seg_len
+            )
 
             # Optional resampling
             if resample:
@@ -253,7 +274,7 @@ class SavitzkyGolayFilter:
 
         return arcpy.Polyline(arr, geom.spatialReference)
 
-    def _smooth_polygon(self, geom, window, order, resample, delta_s, smooth_factor):
+    def _smooth_polygon(self, geom, max_seg_len, window, order, resample, delta_s, smooth_factor):
         """Smooth a polygon geometry using Savitzky-Golay filter."""
         arr = arcpy.Array()
         for part in geom:
@@ -273,7 +294,9 @@ class SavitzkyGolayFilter:
                 continue
 
             # Apply Savitzky-Golay smoothing with wrap mode for closed geometries
-            x_sm, y_sm = smooth_closed_geometry(x, y, window, order)
+            x_sm, y_sm = smooth_closed_geometry(
+                x, y, window, order, max_segment_length=max_seg_len
+            )
 
             # Optional resampling
             if resample:
