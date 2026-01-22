@@ -21,8 +21,8 @@ if _vendor_dir not in sys.path:
 
 from sbanks_core.whittaker import WhittakerSmoother
 from sbanks_core.savgol import (
-    smooth_open_geometry_arclength,
-    smooth_closed_geometry_arclength,
+    smooth_open_geometry,
+    smooth_closed_geometry,
 )
 from sbanks_core.geometry import (
     calculate_cumulative_distances,
@@ -182,7 +182,6 @@ class SavitzkyGolayFilter:
         desc = arcpy.Describe(in_fc)
         shape_type = desc.shapeType
         sr = desc.spatialReference
-        is_geographic = sr.type == "Geographic"
 
         # Create output feature class
         arcpy.CreateFeatureclass_management(
@@ -207,25 +206,25 @@ class SavitzkyGolayFilter:
                         continue
 
                     smoothed_geom = self._smooth_geometry(
-                        geom, window, order, resample, delta_s, smooth_factor, is_geographic
+                        geom, window, order, resample, delta_s, smooth_factor
                     )
                     dst.insertRow([smoothed_geom] + list(row[1:]))
 
         arcpy.AddMessage(f"Successfully processed features to {out_fc}")
         return
 
-    def _smooth_geometry(self, geom, window, order, resample, delta_s, smooth_factor, is_geographic):
+    def _smooth_geometry(self, geom, window, order, resample, delta_s, smooth_factor):
         """Smooth a geometry based on its type."""
         if geom is None:
             return geom
         if geom.type == "polyline":
-            return self._smooth_polyline(geom, window, order, resample, delta_s, smooth_factor, is_geographic)
+            return self._smooth_polyline(geom, window, order, resample, delta_s, smooth_factor)
         elif geom.type == "polygon":
-            return self._smooth_polygon(geom, window, order, resample, delta_s, smooth_factor, is_geographic)
+            return self._smooth_polygon(geom, window, order, resample, delta_s, smooth_factor)
         return geom
 
-    def _smooth_polyline(self, geom, window, order, resample, delta_s, smooth_factor, is_geographic):
-        """Smooth a polyline geometry with arc-length parameterization."""
+    def _smooth_polyline(self, geom, window, order, resample, delta_s, smooth_factor):
+        """Smooth a polyline geometry using Savitzky-Golay filter."""
         arr = arcpy.Array()
         for part in geom:
             pts = [p for p in part if p is not None]
@@ -240,8 +239,8 @@ class SavitzkyGolayFilter:
             x_s, y_s = x[0], y[0]
             x_e, y_e = x[-1], y[-1]
 
-            # Use arc-length aware smoothing to avoid spike artifacts
-            x_sm, y_sm = smooth_open_geometry_arclength(x, y, window, order, is_geographic)
+            # Apply Savitzky-Golay smoothing with anti-hook padding
+            x_sm, y_sm = smooth_open_geometry(x, y, window, order)
 
             # Optional resampling
             if resample:
@@ -254,8 +253,8 @@ class SavitzkyGolayFilter:
 
         return arcpy.Polyline(arr, geom.spatialReference)
 
-    def _smooth_polygon(self, geom, window, order, resample, delta_s, smooth_factor, is_geographic):
-        """Smooth a polygon geometry with arc-length parameterization."""
+    def _smooth_polygon(self, geom, window, order, resample, delta_s, smooth_factor):
+        """Smooth a polygon geometry using Savitzky-Golay filter."""
         arr = arcpy.Array()
         for part in geom:
             pts = [p for p in part if p is not None]
@@ -273,8 +272,8 @@ class SavitzkyGolayFilter:
                 arr.add(ring)
                 continue
 
-            # Use arc-length aware smoothing to avoid spike artifacts
-            x_sm, y_sm = smooth_closed_geometry_arclength(x, y, window, order, is_geographic)
+            # Apply Savitzky-Golay smoothing with wrap mode for closed geometries
+            x_sm, y_sm = smooth_closed_geometry(x, y, window, order)
 
             # Optional resampling
             if resample:
