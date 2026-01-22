@@ -22,18 +22,17 @@
  ***************************************************************************/
 """
 
-__author__ = 'Anatoly Tsyplenkov'
-__date__ = '2026-01-16'
-__copyright__ = '(C) 2026 by Anatoly Tsyplenkov'
+__author__ = "Anatoly Tsyplenkov"
+__date__ = "2026-01-16"
+__copyright__ = "(C) 2026 by Anatoly Tsyplenkov"
 
-__revision__ = '$Format:%H$'
+__revision__ = "$Format:%H$"
 
 from qgis.core import QgsApplication
 from .sbanks_provider import SbanksProvider
 
 
 class SbanksPlugin(object):
-
     def __init__(self):
         self.provider = None
 

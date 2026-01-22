@@ -22,16 +22,16 @@
  This script initializes the plugin, making it known to QGIS.
 """
 
-__author__ = 'Anatoly Tsyplenkov'
-__date__ = '2026-01-16'
-__copyright__ = '(C) 2026 by Anatoly Tsyplenkov'
+__author__ = "Anatoly Tsyplenkov"
+__date__ = "2026-01-16"
+__copyright__ = "(C) 2026 by Anatoly Tsyplenkov"
 
 import os
 import sys
 
 # Patch sys.path to include vendor/sbanks-lib for sbanks_core imports
 _current_dir = os.path.dirname(os.path.abspath(__file__))
-_vendor_dir = os.path.join(_current_dir, 'vendor', 'sbanks-lib')
+_vendor_dir = os.path.join(_current_dir, "vendor", "sbanks-lib")
 if _vendor_dir not in sys.path:
     sys.path.insert(0, _vendor_dir)
 
@@ -44,4 +44,5 @@ def classFactory(iface):  # pylint: disable=invalid-name
     :type iface: QgsInterface
     """
     from .sbanks_plugin import SbanksPlugin
+
     return SbanksPlugin()

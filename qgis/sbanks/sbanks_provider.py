@@ -22,11 +22,11 @@
  ***************************************************************************/
 """
 
-__author__ = 'Anatoly Tsyplenkov'
-__date__ = '2026-01-16'
-__copyright__ = '(C) 2026 by Anatoly Tsyplenkov'
+__author__ = "Anatoly Tsyplenkov"
+__date__ = "2026-01-16"
+__copyright__ = "(C) 2026 by Anatoly Tsyplenkov"
 
-__revision__ = '$Format:%H$'
+__revision__ = "$Format:%H$"
 
 import os
 
@@ -37,7 +37,6 @@ from .sbanks_whittaker_algorithm import WhittakerAlgorithm
 
 
 class SbanksProvider(QgsProcessingProvider):
-
     def __init__(self):
         """
         Default constructor.
@@ -64,7 +63,7 @@ class SbanksProvider(QgsProcessingProvider):
         string should be a unique, short, character only string, eg "qgis" or
         "gdal". This string should not be localised.
         """
-        return 'Sbanks'
+        return "Sbanks"
 
     def name(self):
         """
@@ -73,14 +72,14 @@ class SbanksProvider(QgsProcessingProvider):
 
         This string should be short (e.g. "Lastools") and localised.
         """
-        return self.tr('sbanks')
+        return self.tr("sbanks")
 
     def icon(self):
         """
         Should return a QIcon which is used for your provider inside
         the Processing toolbox.
         """
-        return QIcon(os.path.join(os.path.dirname(__file__), 'icon.svg'))
+        return QIcon(os.path.join(os.path.dirname(__file__), "icon.svg"))
 
     def longName(self):
         """

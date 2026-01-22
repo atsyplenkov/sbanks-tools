@@ -48,7 +48,7 @@ def test_sbanks_core_basic_functionality():
 # Tests below require QGIS environment
 @pytest.mark.skipif(
     not pytest.importorskip("qgis", reason="QGIS not available"),
-    reason="QGIS not available"
+    reason="QGIS not available",
 )
 class TestQGISAlgorithms:
     """Tests that require QGIS environment."""
@@ -67,9 +67,9 @@ class TestQGISAlgorithms:
         from sbanks.sbanks_whittaker_algorithm import WhittakerAlgorithm
 
         savgol = SbanksAlgorithm()
-        assert savgol.name() == 'savgol_filter'
-        assert savgol.displayName() == 'Savitzky-Golay Filter'
+        assert savgol.name() == "savgol_filter"
+        assert savgol.displayName() == "Savitzky-Golay Filter"
 
         whittaker = WhittakerAlgorithm()
-        assert whittaker.name() == 'whittaker_filter'
-        assert whittaker.displayName() == 'Whittaker-Eilers Filter'
+        assert whittaker.name() == "whittaker_filter"
+        assert whittaker.displayName() == "Whittaker-Eilers Filter"

@@ -6,7 +6,6 @@ These tests can be run without ArcGIS to verify sbanks_core integration.
 Full toolbox tests require ArcGIS Pro environment.
 """
 
-import pytest
 
 
 def test_sbanks_core_import():
@@ -16,7 +15,7 @@ def test_sbanks_core_import():
 
     # Add vendor path (simulating what the toolbox does)
     current_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    vendor_dir = os.path.join(current_dir, 'vendor', 'sbanks-lib')
+    vendor_dir = os.path.join(current_dir, "vendor", "sbanks-lib")
     if vendor_dir not in sys.path:
         sys.path.insert(0, vendor_dir)
 

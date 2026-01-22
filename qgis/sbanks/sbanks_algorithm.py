@@ -22,11 +22,11 @@
  ***************************************************************************/
 """
 
-__author__ = 'Anatoly Tsyplenkov'
-__date__ = '2026-01-16'
-__copyright__ = '(C) 2026 by Anatoly Tsyplenkov'
+__author__ = "Anatoly Tsyplenkov"
+__date__ = "2026-01-16"
+__copyright__ = "(C) 2026 by Anatoly Tsyplenkov"
 
-__revision__ = '$Format:%H$'
+__revision__ = "$Format:%H$"
 
 import os
 
@@ -71,81 +71,80 @@ class SbanksAlgorithm(QgsProcessingAlgorithm):
     Optionally, spline-based resampling can be applied after smoothing.
     """
 
-    INPUT = 'INPUT'
-    OUTPUT = 'OUTPUT'
-    WINDOW_LENGTH = 'WINDOW_LENGTH'
-    POLYORDER = 'POLYORDER'
-    USE_RESAMPLING = 'USE_RESAMPLING'
-    SAMPLING_DISTANCE = 'SAMPLING_DISTANCE'
-    SMOOTHING_FACTOR = 'SMOOTHING_FACTOR'
+    INPUT = "INPUT"
+    OUTPUT = "OUTPUT"
+    WINDOW_LENGTH = "WINDOW_LENGTH"
+    POLYORDER = "POLYORDER"
+    USE_RESAMPLING = "USE_RESAMPLING"
+    SAMPLING_DISTANCE = "SAMPLING_DISTANCE"
+    SMOOTHING_FACTOR = "SMOOTHING_FACTOR"
 
     def initAlgorithm(self, config=None):
         """Define the inputs and outputs of the algorithm."""
         self.addParameter(
             QgsProcessingParameterFeatureSource(
                 self.INPUT,
-                self.tr('Input layer'),
-                [QgsProcessing.TypeVectorLine, QgsProcessing.TypeVectorPolygon]
+                self.tr("Input layer"),
+                [QgsProcessing.TypeVectorLine, QgsProcessing.TypeVectorPolygon],
             )
         )
 
         self.addParameter(
             QgsProcessingParameterNumber(
                 self.WINDOW_LENGTH,
-                self.tr('Window length (must be odd)'),
+                self.tr("Window length (must be odd)"),
                 type=QgsProcessingParameterNumber.Integer,
                 defaultValue=11,
-                minValue=3
+                minValue=3,
             )
         )
 
         self.addParameter(
             QgsProcessingParameterNumber(
                 self.POLYORDER,
-                self.tr('Polynomial order'),
+                self.tr("Polynomial order"),
                 type=QgsProcessingParameterNumber.Integer,
                 defaultValue=3,
-                minValue=1
+                minValue=1,
             )
         )
 
         self.addParameter(
             QgsProcessingParameterBoolean(
                 self.USE_RESAMPLING,
-                self.tr('Apply spline resampling after smoothing'),
-                defaultValue=True
+                self.tr("Apply spline resampling after smoothing"),
+                defaultValue=True,
             )
         )
 
         sampling_distance_param = QgsProcessingParameterNumber(
             self.SAMPLING_DISTANCE,
-            self.tr('Resampling distance'),
+            self.tr("Resampling distance"),
             type=QgsProcessingParameterNumber.Double,
             defaultValue=25.0,
-            minValue=0.001
+            minValue=0.001,
         )
         sampling_distance_param.setFlags(
-            sampling_distance_param.flags() | QgsProcessingParameterDefinition.FlagAdvanced
+            sampling_distance_param.flags()
+            | QgsProcessingParameterDefinition.FlagAdvanced
         )
         self.addParameter(sampling_distance_param)
 
         smoothing_factor_param = QgsProcessingParameterNumber(
             self.SMOOTHING_FACTOR,
-            self.tr('Spline smoothing factor'),
+            self.tr("Spline smoothing factor"),
             type=QgsProcessingParameterNumber.Double,
             defaultValue=1.0,
-            minValue=0.0
+            minValue=0.0,
         )
         smoothing_factor_param.setFlags(
-            smoothing_factor_param.flags() | QgsProcessingParameterDefinition.FlagAdvanced
+            smoothing_factor_param.flags()
+            | QgsProcessingParameterDefinition.FlagAdvanced
         )
         self.addParameter(smoothing_factor_param)
 
         self.addParameter(
-            QgsProcessingParameterFeatureSink(
-                self.OUTPUT,
-                self.tr('SG smoothed layer')
-            )
+            QgsProcessingParameterFeatureSink(self.OUTPUT, self.tr("SG smoothed layer"))
         )
 
     def processAlgorithm(self, parameters, context, feedback):
@@ -154,33 +153,45 @@ class SbanksAlgorithm(QgsProcessingAlgorithm):
         window_length = self.parameterAsInt(parameters, self.WINDOW_LENGTH, context)
         polyorder = self.parameterAsInt(parameters, self.POLYORDER, context)
         use_resampling = self.parameterAsBool(parameters, self.USE_RESAMPLING, context)
-        sampling_distance = self.parameterAsDouble(parameters, self.SAMPLING_DISTANCE, context)
-        smoothing_factor = self.parameterAsDouble(parameters, self.SMOOTHING_FACTOR, context)
+        sampling_distance = self.parameterAsDouble(
+            parameters, self.SAMPLING_DISTANCE, context
+        )
+        smoothing_factor = self.parameterAsDouble(
+            parameters, self.SMOOTHING_FACTOR, context
+        )
 
         # Validate window_length is odd
         if window_length % 2 == 0:
             window_length += 1
             feedback.pushInfo(
-                self.tr(f'Window length adjusted to {window_length} (must be odd)')
+                self.tr(f"Window length adjusted to {window_length} (must be odd)")
             )
 
         # Validate polyorder < window_length
         if polyorder >= window_length:
             polyorder = window_length - 1
             feedback.pushWarning(
-                self.tr(f'Polynomial order adjusted to {polyorder} (must be less than window length)')
+                self.tr(
+                    f"Polynomial order adjusted to {polyorder} (must be less than window length)"
+                )
             )
 
         # Check for geographic CRS
         if source.sourceCrs().isGeographic():
             feedback.pushWarning(
-                self.tr('Input layer uses a geographic CRS. Results may be inaccurate. '
-                       'Consider reprojecting to a projected CRS.')
+                self.tr(
+                    "Input layer uses a geographic CRS. Results may be inaccurate. "
+                    "Consider reprojecting to a projected CRS."
+                )
             )
 
         (sink, dest_id) = self.parameterAsSink(
-            parameters, self.OUTPUT, context,
-            source.fields(), source.wkbType(), source.sourceCrs()
+            parameters,
+            self.OUTPUT,
+            context,
+            source.fields(),
+            source.wkbType(),
+            source.sourceCrs(),
         )
 
         total = 100.0 / source.featureCount() if source.featureCount() else 0
@@ -202,7 +213,7 @@ class SbanksAlgorithm(QgsProcessingAlgorithm):
             # Skip Point geometries
             if geom_type == QgsWkbTypes.PointGeometry:
                 feedback.pushInfo(
-                    self.tr(f'Skipping point geometry for feature {feature.id()}')
+                    self.tr(f"Skipping point geometry for feature {feature.id()}")
                 )
                 sink.addFeature(feature, QgsFeatureSink.FastInsert)
                 feedback.setProgress(int(current * total))
@@ -213,9 +224,14 @@ class SbanksAlgorithm(QgsProcessingAlgorithm):
 
             # Process the geometry
             smoothed_geom = self._smooth_geometry(
-                geom, window_length, polyorder,
-                use_resampling, sampling_distance, smoothing_factor,
-                is_geographic, feedback
+                geom,
+                window_length,
+                polyorder,
+                use_resampling,
+                sampling_distance,
+                smoothing_factor,
+                is_geographic,
+                feedback,
             )
 
             new_feature = QgsFeature(feature)
@@ -226,9 +242,17 @@ class SbanksAlgorithm(QgsProcessingAlgorithm):
 
         return {self.OUTPUT: dest_id}
 
-    def _smooth_geometry(self, geometry, window_length, polyorder,
-                         use_resampling, sampling_distance, smoothing_factor,
-                         is_geographic, feedback):
+    def _smooth_geometry(
+        self,
+        geometry,
+        window_length,
+        polyorder,
+        use_resampling,
+        sampling_distance,
+        smoothing_factor,
+        is_geographic,
+        feedback,
+    ):
         """
         Smooth a geometry using Savitzky-Golay filter.
         """
@@ -243,9 +267,17 @@ class SbanksAlgorithm(QgsProcessingAlgorithm):
 
             for part in parts:
                 smoothed_part = self._smooth_single_geometry(
-                    part, window_length, polyorder,
-                    use_resampling, sampling_distance, smoothing_factor,
-                    geom_type, has_z, has_m, is_geographic, feedback
+                    part,
+                    window_length,
+                    polyorder,
+                    use_resampling,
+                    sampling_distance,
+                    smoothing_factor,
+                    geom_type,
+                    has_z,
+                    has_m,
+                    is_geographic,
+                    feedback,
                 )
                 if smoothed_part:
                     smoothed_parts.append(smoothed_part)
@@ -263,38 +295,81 @@ class SbanksAlgorithm(QgsProcessingAlgorithm):
                 return QgsGeometry(multi_geom)
         else:
             smoothed = self._smooth_single_geometry(
-                geometry, window_length, polyorder,
-                use_resampling, sampling_distance, smoothing_factor,
-                geom_type, has_z, has_m, is_geographic, feedback
+                geometry,
+                window_length,
+                polyorder,
+                use_resampling,
+                sampling_distance,
+                smoothing_factor,
+                geom_type,
+                has_z,
+                has_m,
+                is_geographic,
+                feedback,
             )
             if smoothed:
                 return QgsGeometry(smoothed)
 
         return geometry
 
-    def _smooth_single_geometry(self, geometry, window_length, polyorder,
-                                 use_resampling, sampling_distance, smoothing_factor,
-                                 geom_type, has_z, has_m, is_geographic, feedback):
+    def _smooth_single_geometry(
+        self,
+        geometry,
+        window_length,
+        polyorder,
+        use_resampling,
+        sampling_distance,
+        smoothing_factor,
+        geom_type,
+        has_z,
+        has_m,
+        is_geographic,
+        feedback,
+    ):
         """
         Smooth a single (non-multi) geometry.
         """
         if geom_type == QgsWkbTypes.LineGeometry:
             return self._smooth_linestring(
-                geometry, window_length, polyorder,
-                use_resampling, sampling_distance, smoothing_factor,
-                has_z, has_m, is_geographic, feedback
+                geometry,
+                window_length,
+                polyorder,
+                use_resampling,
+                sampling_distance,
+                smoothing_factor,
+                has_z,
+                has_m,
+                is_geographic,
+                feedback,
             )
         elif geom_type == QgsWkbTypes.PolygonGeometry:
             return self._smooth_polygon(
-                geometry, window_length, polyorder,
-                use_resampling, sampling_distance, smoothing_factor,
-                has_z, has_m, is_geographic, feedback
+                geometry,
+                window_length,
+                polyorder,
+                use_resampling,
+                sampling_distance,
+                smoothing_factor,
+                has_z,
+                has_m,
+                is_geographic,
+                feedback,
             )
         return None
 
-    def _smooth_linestring(self, geometry, window_length, polyorder,
-                           use_resampling, sampling_distance, smoothing_factor,
-                           has_z, has_m, is_geographic, feedback):
+    def _smooth_linestring(
+        self,
+        geometry,
+        window_length,
+        polyorder,
+        use_resampling,
+        sampling_distance,
+        smoothing_factor,
+        has_z,
+        has_m,
+        is_geographic,
+        feedback,
+    ):
         """
         Smooth a LineString geometry with arc-length parameterization.
         """
@@ -305,7 +380,9 @@ class SbanksAlgorithm(QgsProcessingAlgorithm):
         n_points = line.numPoints()
         if n_points < window_length:
             feedback.pushInfo(
-                self.tr(f'Line has fewer points ({n_points}) than window length ({window_length}). Skipping smoothing.')
+                self.tr(
+                    f"Line has fewer points ({n_points}) than window length ({window_length}). Skipping smoothing."
+                )
             )
             return line.clone()
 
@@ -335,9 +412,19 @@ class SbanksAlgorithm(QgsProcessingAlgorithm):
         points = [QgsPoint(x_smooth[i], y_smooth[i]) for i in range(len(x_smooth))]
         return QgsLineString(points)
 
-    def _smooth_polygon(self, geometry, window_length, polyorder,
-                        use_resampling, sampling_distance, smoothing_factor,
-                        has_z, has_m, is_geographic, feedback):
+    def _smooth_polygon(
+        self,
+        geometry,
+        window_length,
+        polyorder,
+        use_resampling,
+        sampling_distance,
+        smoothing_factor,
+        has_z,
+        has_m,
+        is_geographic,
+        feedback,
+    ):
         """
         Smooth a Polygon geometry with arc-length parameterization.
         """
@@ -350,18 +437,28 @@ class SbanksAlgorithm(QgsProcessingAlgorithm):
             return None
 
         smoothed_exterior = self._smooth_ring(
-            exterior_ring, window_length, polyorder,
-            use_resampling, sampling_distance, smoothing_factor,
-            is_geographic, feedback
+            exterior_ring,
+            window_length,
+            polyorder,
+            use_resampling,
+            sampling_distance,
+            smoothing_factor,
+            is_geographic,
+            feedback,
         )
 
         smoothed_interiors = []
         for i in range(polygon.numInteriorRings()):
             interior_ring = polygon.interiorRing(i)
             smoothed_interior = self._smooth_ring(
-                interior_ring, window_length, polyorder,
-                use_resampling, sampling_distance, smoothing_factor,
-                is_geographic, feedback
+                interior_ring,
+                window_length,
+                polyorder,
+                use_resampling,
+                sampling_distance,
+                smoothing_factor,
+                is_geographic,
+                feedback,
             )
             smoothed_interiors.append(smoothed_interior)
 
@@ -372,9 +469,17 @@ class SbanksAlgorithm(QgsProcessingAlgorithm):
 
         return result
 
-    def _smooth_ring(self, ring, window_length, polyorder,
-                     use_resampling, sampling_distance, smoothing_factor,
-                     is_geographic, feedback):
+    def _smooth_ring(
+        self,
+        ring,
+        window_length,
+        polyorder,
+        use_resampling,
+        sampling_distance,
+        smoothing_factor,
+        is_geographic,
+        feedback,
+    ):
         """
         Smooth a polygon ring (closed curve) with arc-length parameterization.
         """
@@ -382,7 +487,9 @@ class SbanksAlgorithm(QgsProcessingAlgorithm):
 
         if n_points < window_length + 1:
             feedback.pushInfo(
-                self.tr(f'Ring has fewer points ({n_points}) than window length ({window_length}). Skipping smoothing.')
+                self.tr(
+                    f"Ring has fewer points ({n_points}) than window length ({window_length}). Skipping smoothing."
+                )
             )
             return ring.clone()
 
@@ -408,8 +515,10 @@ class SbanksAlgorithm(QgsProcessingAlgorithm):
             x_smooth = np.asarray(x_resampled)
             y_smooth = np.asarray(y_resampled)
             if len(x_smooth) > 1:
-                if (abs(x_smooth[-1] - x_smooth[0]) < 1e-9 and
-                    abs(y_smooth[-1] - y_smooth[0]) < 1e-9):
+                if (
+                    abs(x_smooth[-1] - x_smooth[0]) < 1e-9
+                    and abs(y_smooth[-1] - y_smooth[0]) < 1e-9
+                ):
                     x_smooth = x_smooth[:-1]
                     y_smooth = y_smooth[:-1]
 
@@ -421,36 +530,36 @@ class SbanksAlgorithm(QgsProcessingAlgorithm):
 
     def name(self):
         """Return the algorithm name."""
-        return 'savgol_filter'
+        return "savgol_filter"
 
     def displayName(self):
         """Return the translated algorithm name."""
-        return self.tr('Savitzky-Golay Filter')
+        return self.tr("Savitzky-Golay Filter")
 
     def icon(self):
         """Return the algorithm icon."""
-        icon_path = os.path.join(os.path.dirname(__file__), 'icon.svg')
+        icon_path = os.path.join(os.path.dirname(__file__), "icon.svg")
         return QIcon(icon_path)
 
     def shortHelpString(self):
         """Return a short help string for the algorithm."""
         return self.tr(
-            'Smooths vector geometries (LineStrings and Polygons) using the '
-            'Savitzky-Golay filter.\n\n'
-            'Parameters:\n'
-            '- Window length: The length of the filter window (must be odd). '
-            'Larger values produce smoother results.\n'
-            '- Polynomial order: The order of the polynomial used to fit samples. '
-            'Must be less than window length.\n'
-            '- Apply spline resampling: Optionally resample the smoothed geometry '
-            'using cubic spline interpolation.\n'
-            '- Resampling distance: Target distance between points after resampling.\n'
-            '- Spline smoothing factor: Controls the amount of smoothing applied '
-            'during spline interpolation.'
+            "Smooths vector geometries (LineStrings and Polygons) using the "
+            "Savitzky-Golay filter.\n\n"
+            "Parameters:\n"
+            "- Window length: The length of the filter window (must be odd). "
+            "Larger values produce smoother results.\n"
+            "- Polynomial order: The order of the polynomial used to fit samples. "
+            "Must be less than window length.\n"
+            "- Apply spline resampling: Optionally resample the smoothed geometry "
+            "using cubic spline interpolation.\n"
+            "- Resampling distance: Target distance between points after resampling.\n"
+            "- Spline smoothing factor: Controls the amount of smoothing applied "
+            "during spline interpolation."
         )
 
     def tr(self, string):
-        return QCoreApplication.translate('Processing', string)
+        return QCoreApplication.translate("Processing", string)
 
     def createInstance(self):
         return SbanksAlgorithm()
