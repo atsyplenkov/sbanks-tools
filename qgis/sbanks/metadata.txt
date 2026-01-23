@@ -11,7 +11,11 @@ version=0.1
 author=Anatoly Tsyplenkov
 email=hard.sign9115@fastmail.com
 
-about=The plugin performs vector geometry smoothing using Savitzky-Golay (1964) or Whittaker-Eilers (2003) filters with optional spline resampling. The Whittaker-Eilers filter supports distance-aware smoothing for unevenly spaced data. Uses the sbanks-core library for pure Python smoothing algorithms without additional dependencies, making it easy to install plugin in managed environments.
+about=The plugin performs vector geometry smoothing using Savitzky-Golay (1964) or Whittaker-Eilers (2003) filters with optional spline resampling. The Whittaker-Eilers filter supports distance-aware smoothing for unevenly spaced data. Uses sbanks-core library for pure Python smoothing algorithms without additional dependencies, making it easy to install plugin in managed environments.
+
+Dependencies: This plugin requires numpy and scipy packages, which are commonly available in standard QGIS Python 3+ environments. If your QGIS installation does not have these packages, you may need to install them manually:
+  - On Linux/macOS: `pip install numpy scipy` or use your system package manager
+  - On Windows with OSGeo4W: Packages should be included by default in QGIS Python environment.
 
 tracker=https://github.com/atsyplenkov/sbanks-tools/issues
 repository=https://github.com/atsyplenkov/sbanks-tools
@@ -20,8 +24,7 @@ repository=https://github.com/atsyplenkov/sbanks-tools
 # Recommended items:
 
 hasProcessingProvider=yes
-# Uncomment the following line and add your changelog:
-# changelog=
+changelog=See CHANGELOG.md
 
 # Tags are comma separated with spaces allowed
 tags=geometry, polyline, polygon, vector, smoothing, savitzky-golay, whittaker-eilers
