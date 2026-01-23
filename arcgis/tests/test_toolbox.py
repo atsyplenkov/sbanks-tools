@@ -7,7 +7,6 @@ Full toolbox tests require ArcGIS Pro environment.
 """
 
 
-
 def test_sbanks_core_import():
     """Test that sbanks_core can be imported."""
     import sys
