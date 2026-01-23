@@ -57,7 +57,6 @@ zip: clean
 		-x "*/.pytest_cache/*" \
 		-x "*.egg-info/*" \
 		-x "$(PLUGINNAME)/test_data/*" \
-		-x "$(PLUGINNAME)/vendor/sbanks-lib/setup.py" \
 		-x "$(PLUGINNAME)/vendor/sbanks-lib/pyproject.toml" \
 		-x "$(PLUGINNAME)/vendor/sbanks-lib/requirements.txt"
 	@echo "Created: $(PLUGINNAME).zip"
@@ -77,7 +76,6 @@ deploy: clean
 	find $(QGISDIR)/$(PLUGINNAME) -name ".gitignore" -delete 2>/dev/null || true
 	rm -rf $(QGISDIR)/$(PLUGINNAME)/test_data 2>/dev/null || true
 	rm -rf $(QGISDIR)/$(PLUGINNAME)/vendor/sbanks-lib/tests 2>/dev/null || true
-	rm -f $(QGISDIR)/$(PLUGINNAME)/vendor/sbanks-lib/setup.py 2>/dev/null || true
 	rm -f $(QGISDIR)/$(PLUGINNAME)/vendor/sbanks-lib/pyproject.toml 2>/dev/null || true
 	rm -f $(QGISDIR)/$(PLUGINNAME)/vendor/sbanks-lib/requirements.txt 2>/dev/null || true
 	@echo "Plugin deployed to: $(QGISDIR)/$(PLUGINNAME)"
