@@ -18,7 +18,7 @@ Please note that this repository contains only the frontend implementation for G
 **Option 1: Official Repository (⚠️ NOT YET AVAILABLE)**
 
 1. Open QGIS and navigate to **Plugins** > **Manage and Install Plugins...**
-2. Select the **All** tab and search for `Sbanks`.
+2. Select the **All** tab and search for `sbanks`.
 3. Select the plugin from the list and click **Install Plugin**.
 
 **Option 2: Install from ZIP**
@@ -31,21 +31,24 @@ If you need a specific version or the plugin is not yet available in the reposit
 
 ### ArcGIS Pro
 
-1. Download the repository or the standalone `sbanks-arcgis.pyt` file from [Releases page](https://github.com/atsyplenkov/sbanks-tools/releases).
+1. Download standalone `sbanks-arcgis.pyt` file from [Releases page](https://github.com/atsyplenkov/sbanks-tools/releases).
 2. Open your project in ArcGIS Pro.
 3. In the **Catalog** pane, right-click **Toolboxes** and select **Add Toolbox**.
-4. Navigate to the `sbanks-tools/arcgis` folder and select `sbanks-arcgis.pyt`.
+4. Navigate to the downloaded `sbanks-arcgis.pyt` file and select it.
 5. The tool will now be available under your Project Toolboxes.
 
 ## Build from source (QGIS)
 
-1. Create the plugin package:
+1. Clone the repo
+```bash
+git clone https://github.com/atsyplenkov/qgis-tools.git && cd qgis-tools
+```
+2. Create the plugin package:
 ```bash
 make zip
 ```
-
-2. In QGIS, go to **Plugins** > **Manage and Install Plugins...** > **Install from ZIP**
-3. Select the generated `sbanks.zip` file
+3. In QGIS, go to **Plugins** > **Manage and Install Plugins...** > **Install from ZIP**
+4. Select the generated `sbanks.zip` file
 
 ## License and Citation
 
