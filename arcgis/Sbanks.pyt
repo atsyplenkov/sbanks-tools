@@ -82,7 +82,7 @@ class SavitzkyGolayFilter:
             parameterType="Required",
             direction="Input"
         )
-        param2.value = 60.0
+        param2.value = 300.0
 
         # Window Length
         param3 = arcpy.Parameter(
@@ -181,7 +181,7 @@ class SavitzkyGolayFilter:
         """Execute the tool."""
         in_fc = parameters[0].valueAsText
         out_fc = parameters[1].valueAsText
-        max_seg_len = parameters[2].value if parameters[2].value else 60.0
+        max_seg_len = parameters[2].value if parameters[2].value else 300.0
         window = parameters[3].value
         order = parameters[4].value
         resample = parameters[5].value if parameters[5].value else False

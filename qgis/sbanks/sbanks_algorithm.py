@@ -98,7 +98,7 @@ class SbanksAlgorithm(QgsProcessingAlgorithm):
                 self.MAX_SEGMENT_LENGTH,
                 self.tr("Max segment length for densification (0 to disable)"),
                 type=QgsProcessingParameterNumber.Double,
-                defaultValue=60.0,
+                defaultValue=300.0,
                 minValue=0.0,
             )
         )
