@@ -1,7 +1,9 @@
 # sbanks
 
-[![en](https://img.shields.io/badge/lang-en-blue.svg)](README.md)
-[![ru](https://img.shields.io/badge/lang-ru-green.svg)](README.ru.md)
+<p align="center">
+     <a href="README.md"><img src="https://img.shields.io/badge/lang-en-blue.svg" alt="English"></a>
+     <a href="README.ru.md"><img src="https://img.shields.io/badge/lang-ru-green.svg" alt="Russian"></a>
+</p>
 
 <p align="center">
      <a href="https://github.com/astral-sh/ruff"><img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json" alt="Ruff"></a>
