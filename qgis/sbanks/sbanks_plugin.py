@@ -28,7 +28,10 @@ __copyright__ = "(C) 2026 by Anatoly Tsyplenkov"
 
 __revision__ = "$Format:%H$"
 
+import os
+
 from qgis.core import QgsApplication
+from qgis.PyQt.QtCore import QCoreApplication, QLocale, QSettings, QTranslator
 
 from .sbanks_provider import SbanksProvider
 
@@ -36,6 +39,29 @@ from .sbanks_provider import SbanksProvider
 class SbanksPlugin(object):
     def __init__(self):
         self.provider = None
+        self.translator = None
+        self.plugin_dir = os.path.dirname(__file__)
+
+    def _init_translation(self):
+        override_locale = QSettings().value("locale/overrideFlag", False, type=bool)
+        if override_locale:
+            locale_name = QSettings().value("locale/userLocale", "")
+        else:
+            locale_name = QLocale.system().name()
+
+        locale_candidates = [locale_name]
+        if "_" in locale_name:
+            locale_candidates.append(locale_name.split("_", 1)[0])
+
+        for locale in locale_candidates:
+            locale_path = os.path.join(
+                self.plugin_dir, "i18n", "sbanks_{}.qm".format(locale)
+            )
+            if os.path.exists(locale_path):
+                self.translator = QTranslator()
+                self.translator.load(locale_path)
+                QCoreApplication.installTranslator(self.translator)
+                break
 
     def initProcessing(self):
         """Init Processing provider for QGIS >= 3.8."""
@@ -43,7 +69,11 @@ class SbanksPlugin(object):
         QgsApplication.processingRegistry().addProvider(self.provider)
 
     def initGui(self):
+        self._init_translation()
         self.initProcessing()
 
     def unload(self):
         QgsApplication.processingRegistry().removeProvider(self.provider)
+        if self.translator is not None:
+            QCoreApplication.removeTranslator(self.translator)
+            self.translator = None

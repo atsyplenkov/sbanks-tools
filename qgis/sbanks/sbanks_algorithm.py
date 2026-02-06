@@ -184,7 +184,9 @@ class SbanksAlgorithm(QgsProcessingAlgorithm):
         if window_length % 2 == 0:
             window_length += 1
             feedback.pushInfo(
-                self.tr(f"Window length adjusted to {window_length} (must be odd)")
+                self.tr("Window length adjusted to {} (must be odd)").format(
+                    window_length
+                )
             )
 
         # Validate polyorder < window_length
@@ -192,8 +194,8 @@ class SbanksAlgorithm(QgsProcessingAlgorithm):
             polyorder = window_length - 1
             feedback.pushWarning(
                 self.tr(
-                    f"Polynomial order adjusted to {polyorder} (must be less than window length)"
-                )
+                    "Polynomial order adjusted to {} (must be less than window length)"
+                ).format(polyorder)
             )
 
         # Check for geographic CRS
@@ -234,7 +236,9 @@ class SbanksAlgorithm(QgsProcessingAlgorithm):
             # Skip Point geometries
             if geom_type == QgsWkbTypes.PointGeometry:
                 feedback.pushInfo(
-                    self.tr(f"Skipping point geometry for feature {feature.id()}")
+                    self.tr("Skipping point geometry for feature {}").format(
+                        feature.id()
+                    )
                 )
                 sink.addFeature(feature, QgsFeatureSink.FastInsert)
                 feedback.setProgress(int(current * total))
@@ -399,8 +403,8 @@ class SbanksAlgorithm(QgsProcessingAlgorithm):
         if n_points < window_length:
             feedback.pushInfo(
                 self.tr(
-                    f"Line has fewer points ({n_points}) than window length ({window_length}). Skipping smoothing."
-                )
+                    "Line has fewer points ({}) than window length ({}). Skipping smoothing."
+                ).format(n_points, window_length)
             )
             return line.clone()
 
@@ -507,8 +511,8 @@ class SbanksAlgorithm(QgsProcessingAlgorithm):
         if n_points < window_length + 1:
             feedback.pushInfo(
                 self.tr(
-                    f"Ring has fewer points ({n_points}) than window length ({window_length}). Skipping S-G smoothing."
-                )
+                    "Ring has fewer points ({}) than window length ({}). Skipping S-G smoothing."
+                ).format(n_points, window_length)
             )
             return ring.clone()
 
@@ -586,7 +590,7 @@ class SbanksAlgorithm(QgsProcessingAlgorithm):
         )
 
     def tr(self, string):
-        return QCoreApplication.translate("Processing", string)
+        return QCoreApplication.translate(self.__class__.__name__, string)
 
     def createInstance(self):
         return SbanksAlgorithm()

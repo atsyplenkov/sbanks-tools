@@ -54,6 +54,23 @@ make zip
 3. In QGIS, go to **Plugins** > **Manage and Install Plugins...** > **Install from ZIP**
 4. Select the generated `sbanks.zip` file
 
+## Translations (QGIS)
+
+Use this workflow to write or update Russian translations for the QGIS plugin.
+
+1. Install Qt translation tools (Debian/Ubuntu):
+```bash
+sudo apt update
+sudo apt install pyqt5-dev-tools qttools5-dev-tools
+```
+2. From repository root, update and compile translations:
+```bash
+make -C sbanks-tools/qgis transupdate
+```
+
+This command updates `sbanks/i18n/sbanks_ru.ts` and compiles `sbanks/i18n/sbanks_ru.qm`.
+Edit translations in `sbanks-tools/qgis/sbanks/i18n/sbanks_ru.ts` (Qt Linguist recommended), then run `make ... transupdate` again.
+
 ## License and Citation
 
 This code is open-source and licensed under the GPL-2.0+ license, see file [LICENCE](LICENSE).

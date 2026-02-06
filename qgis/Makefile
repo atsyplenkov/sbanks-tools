@@ -22,7 +22,14 @@ PLUGINNAME = sbanks
 # QGIS plugin directory (Linux default)
 QGISDIR = $(HOME)/.local/share/QGIS/QGIS3/profiles/default/python/plugins
 
-.PHONY: default help clean zip deploy derase test
+.PHONY: default help clean zip deploy derase test transupdate transcompile
+
+QT_PYLUPDATE ?= pylupdate5
+QT_LRELEASE ?= lrelease
+I18N_DIR = $(PLUGINNAME)/i18n
+TS_RU = $(I18N_DIR)/$(PLUGINNAME)_ru.ts
+QM_RU = $(I18N_DIR)/$(PLUGINNAME)_ru.qm
+PRO_FILE = $(I18N_DIR)/$(PLUGINNAME).pro
 
 default: help
 
@@ -33,6 +40,7 @@ help:
 	@echo "  derase  - Remove deployed plugin"
 	@echo "  clean   - Remove build artifacts"
 	@echo "  test    - Run tests (requires Apptainer with QGIS)"
+	@echo "  transupdate - Update ru translations and compile .qm"
 
 clean:
 	@echo "Removing build artifacts..."
@@ -93,3 +101,12 @@ test:
 	@echo "----------------"
 	apptainer exec ~/Soft/qgis_ltr.sif bash -c \
 		"cd /home/ats/Projects/sbanks/sbanks-tools/qgis && PYTHONPATH=. pytest -v tests/"
+
+transupdate:
+	@echo "Updating Russian translation source (.ts)..."
+	$(QT_PYLUPDATE) $(PRO_FILE)
+	$(MAKE) transcompile
+
+transcompile:
+	@echo "Compiling Russian translation (.qm)..."
+	$(QT_LRELEASE) $(TS_RU) -qm $(QM_RU)

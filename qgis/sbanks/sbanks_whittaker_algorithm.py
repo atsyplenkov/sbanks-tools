@@ -195,7 +195,9 @@ class WhittakerAlgorithm(QgsProcessingAlgorithm):
             # Skip Point geometries
             if geom_type == QgsWkbTypes.PointGeometry:
                 feedback.pushInfo(
-                    self.tr(f"Skipping point geometry for feature {feature.id()}")
+                    self.tr("Skipping point geometry for feature {}").format(
+                        feature.id()
+                    )
                 )
                 sink.addFeature(feature, QgsFeatureSink.FastInsert)
                 feedback.setProgress(int(current * total))
@@ -361,8 +363,8 @@ class WhittakerAlgorithm(QgsProcessingAlgorithm):
         if n_points < min_points:
             feedback.pushInfo(
                 self.tr(
-                    f"Line has fewer points ({n_points}) than minimum required ({min_points}). Skipping W-E smoothing."
-                )
+                    "Line has fewer points ({}) than minimum required ({}). Skipping W-E smoothing."
+                ).format(n_points, min_points)
             )
             return line.clone()
 
@@ -395,8 +397,8 @@ class WhittakerAlgorithm(QgsProcessingAlgorithm):
         except Exception as e:
             feedback.pushWarning(
                 self.tr(
-                    f"Whittaker smoothing failed: {str(e)}. Returning original geometry."
-                )
+                    "Whittaker smoothing failed: {}. Returning original geometry."
+                ).format(str(e))
             )
             return line.clone()
 
@@ -500,8 +502,8 @@ class WhittakerAlgorithm(QgsProcessingAlgorithm):
         if n_points < min_points:
             feedback.pushInfo(
                 self.tr(
-                    f"Ring has fewer points ({n_points}) than minimum required ({min_points}). Skipping W-E smoothing."
-                )
+                    "Ring has fewer points ({}) than minimum required ({}). Skipping W-E smoothing."
+                ).format(n_points, min_points)
             )
             return ring.clone()
 
@@ -537,8 +539,8 @@ class WhittakerAlgorithm(QgsProcessingAlgorithm):
         except Exception as e:
             feedback.pushWarning(
                 self.tr(
-                    f"Whittaker smoothing failed: {str(e)}. Returning original geometry."
-                )
+                    "Whittaker smoothing failed: {}. Returning original geometry."
+                ).format(str(e))
             )
             return ring.clone()
 
@@ -609,7 +611,7 @@ class WhittakerAlgorithm(QgsProcessingAlgorithm):
         )
 
     def tr(self, string):
-        return QCoreApplication.translate("Processing", string)
+        return QCoreApplication.translate(self.__class__.__name__, string)
 
     def createInstance(self):
         return WhittakerAlgorithm()
