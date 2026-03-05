@@ -512,10 +512,10 @@ class WhittakerEilersFilter:
                     lmbda=lmbda,
                     order=order,
                     data_length=len(x_ext),
-                    x_input=d_ext.tolist()
+                    x_input=d_ext
                 )
-                x_sm = np.array(smoother.smooth(x_ext.tolist()))
-                y_sm = np.array(smoother.smooth(y_ext.tolist()))
+                x_sm = smoother.smooth(x_ext)
+                y_sm = smoother.smooth(y_ext)
             except Exception as e:
                 arcpy.AddWarning(f"Whittaker smoothing failed: {e}. Using original geometry.")
                 arr.add(arcpy.Array([arcpy.Point(p.X, p.Y) for p in pts]))
@@ -579,10 +579,10 @@ class WhittakerEilersFilter:
                     lmbda=lmbda,
                     order=order,
                     data_length=len(x_ext),
-                    x_input=d_ext.tolist()
+                    x_input=d_ext
                 )
-                x_sm = np.array(smoother.smooth(x_ext.tolist()))
-                y_sm = np.array(smoother.smooth(y_ext.tolist()))
+                x_sm = smoother.smooth(x_ext)
+                y_sm = smoother.smooth(y_ext)
             except Exception as e:
                 arcpy.AddWarning(f"Whittaker smoothing failed: {e}. Using original geometry.")
                 ring = arcpy.Array([arcpy.Point(xi, yi) for xi, yi in zip(x, y)])

@@ -390,10 +390,10 @@ class WhittakerAlgorithm(QgsProcessingAlgorithm):
                 lmbda=lmbda,
                 order=order,
                 data_length=len(x_extended),
-                x_input=dist_extended.tolist(),
+                x_input=dist_extended,
             )
-            x_smooth = np.array(smoother.smooth(x_extended.tolist()))
-            y_smooth = np.array(smoother.smooth(y_extended.tolist()))
+            x_smooth = smoother.smooth(x_extended)
+            y_smooth = smoother.smooth(y_extended)
         except Exception as e:
             feedback.pushWarning(
                 self.tr(
@@ -532,10 +532,10 @@ class WhittakerAlgorithm(QgsProcessingAlgorithm):
                 lmbda=lmbda,
                 order=order,
                 data_length=len(x_extended),
-                x_input=dist_extended.tolist(),
+                x_input=dist_extended,
             )
-            x_smooth = np.array(smoother.smooth(x_extended.tolist()))
-            y_smooth = np.array(smoother.smooth(y_extended.tolist()))
+            x_smooth = smoother.smooth(x_extended)
+            y_smooth = smoother.smooth(y_extended)
         except Exception as e:
             feedback.pushWarning(
                 self.tr(
