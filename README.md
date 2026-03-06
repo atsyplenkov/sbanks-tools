@@ -4,13 +4,13 @@
     <a href="README.md"><img src="https://img.shields.io/badge/lang-en-blue.svg" alt="English"></a>
     <a href="README.ru.md"><img src="https://img.shields.io/badge/lang-ru-green.svg" alt="Russian"></a>
      <a href="https://github.com/astral-sh/ruff"><img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json" alt="Ruff"></a>
-     <a href="https://github.com/atsyplenkov/sbanks-tools/actions/workflows/qgis-ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/atsyplenkov/sbanks-tools/qgis-ci.yml?branch=master&style=flat&labelColor=1C2C2E&color=88AB26&logo=QGIS&logoColor=white&label=QGIS"></a>
-     <a href="https://github.com/atsyplenkov/sbanks-tools/actions/workflows/arcgis-ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/atsyplenkov/sbanks-tools/arcgis-ci.yml?branch=master&style=flat&labelColor=1C2C2E&color=2C7AC3&logo=arcgis&logoColor=white&label=ArcGIS"></a>
+     <a href="https://github.com/atsyplenkov/sbanks-plugins/actions/workflows/qgis-ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/atsyplenkov/sbanks-plugins/qgis-ci.yml?branch=master&style=flat&labelColor=1C2C2E&color=88AB26&logo=QGIS&logoColor=white&label=QGIS"></a>
+     <a href="https://github.com/atsyplenkov/sbanks-plugins/actions/workflows/arcgis-ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/atsyplenkov/sbanks-plugins/arcgis-ci.yml?branch=master&style=flat&labelColor=1C2C2E&color=2C7AC3&logo=arcgis&logoColor=white&label=ArcGIS"></a>
 </p>
 
 A QGIS 3+ and ArcGIS Pro Processing plugin that smooths 2D vector geometries using the [Savitzky-Golay](https://doi.org/10.1021/ac60214a047) (1964) and [Whittaker-Eilers](https://doi.org/10.1021/ac034173t) (2003) filters with optional spline resampling for smoother output. It was initially designed for and works best with riverbanks mapped from satellite imageries (Landsat and Sentinel missions), which tend to produce zig-zag (pixelated) lines. 
 
-Please note that this repository contains only the frontend implementation for GIS software. The core algorithms and backend logic are maintained in the [sbanks-lib](https://github.com/atsyplenkov/sbanks-lib) repository.
+Please note that this repository contains only the frontend implementation for GIS software. The core algorithms and backend logic are maintained in the [sbanks](https://github.com/atsyplenkov/sbanks) repository.
 
 ![Application of the sbanks plugin in QGIS to filter and smooth Landsat-7 derived shoreline of the Krasnodar Reservoir.](assets/sbanks-example.png)
 
@@ -28,13 +28,13 @@ Please note that this repository contains only the frontend implementation for G
 
 If you need a specific version or the plugin is not yet available in the repository:
 
-1. Download the latest release ZIP file from the [Releases page](https://github.com/atsyplenkov/sbanks-tools/releases).
+1. Download the latest release ZIP file from the [Releases page](https://github.com/atsyplenkov/sbanks-plugins/releases).
 2. In QGIS, go to **Plugins** > **Manage and Install Plugins...** > **Install from ZIP**.
 3. Select the downloaded `sbanks-qgis.zip` file.
 
 ### ArcGIS Pro
 
-1. Download standalone `sbanks-arcgis.pyt` file from [Releases page](https://github.com/atsyplenkov/sbanks-tools/releases).
+1. Download standalone `sbanks-arcgis.pyt` file from [Releases page](https://github.com/atsyplenkov/sbanks-plugins/releases).
 2. Open your project in ArcGIS Pro.
 3. In the **Catalog** pane, right-click **Toolboxes** and select **Add Toolbox**.
 4. Navigate to the downloaded `sbanks-arcgis.pyt` file and select it.
@@ -64,11 +64,11 @@ sudo apt install pyqt5-dev-tools qttools5-dev-tools
 ```
 2. From repository root, update and compile translations:
 ```bash
-make -C sbanks-tools/qgis transupdate
+make -C sbanks-plugins/qgis transupdate
 ```
 
 This command updates `sbanks/i18n/sbanks_ru.ts` and compiles `sbanks/i18n/sbanks_ru.qm`.
-Edit translations in `sbanks-tools/qgis/sbanks/i18n/sbanks_ru.ts` (Qt Linguist recommended), then run `make ... transupdate` again.
+Edit translations in `sbanks-plugins/qgis/sbanks_plugin/i18n/sbanks_ru.ts` (Qt Linguist recommended), then run `make ... transupdate` again.
 
 ## License and Citation
 
@@ -76,7 +76,7 @@ This code is open-source and licensed under the GPL-2.0+ license, see file [LICE
 
 If you use this plugin in your research, please cite the software as follows:
 
-> Tsyplenkov, A. (2026). Sbanks: Smooth vector geometries using Savitzky-Golay or Whittaker-Eilers filters [Software]. GitHub. https://github.com/atsyplenkov/sbanks-tools
+> Tsyplenkov, A. (2026). Sbanks: Smooth vector geometries using Savitzky-Golay or Whittaker-Eilers filters [Software]. GitHub. https://github.com/atsyplenkov/sbanks-plugins
 
 ## Acknowledgements
 Portions of the smoothing logic were inspired by [**Zoltán Sylvester's**](https://github.com/zsylvester) work on river meandering and the [channelmapper](https://github.com/zsylvester/channelmapper) repository.
