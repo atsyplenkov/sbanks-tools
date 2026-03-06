@@ -18,6 +18,7 @@
 # ***************************************************************************/
 
 PLUGINNAME = sbanks_plugin
+ZIPNAME = sbanks_qgis.zip
 
 # QGIS plugin directory (Linux default)
 QGISDIR = $(HOME)/.local/share/QGIS/QGIS3/profiles/default/python/plugins
@@ -44,7 +45,7 @@ help:
 
 clean:
 	@echo "Removing build artifacts..."
-	rm -rf $(PLUGINNAME).zip
+	rm -rf $(ZIPNAME)
 	find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
 	find . -type f -name "*.pyc" -delete 2>/dev/null || true
 
@@ -54,7 +55,7 @@ zip: clean
 	@echo "Creating plugin zip bundle."
 	@echo "---------------------------"
 	@# Create zip with root folder, excluding unwanted files
-	zip -9r $(PLUGINNAME).zip $(PLUGINNAME) \
+	zip -9r $(ZIPNAME) $(PLUGINNAME) \
 		-x "*.pyc" \
 		-x "*/__pycache__/*" \
 		-x "*/.git" \
@@ -67,7 +68,7 @@ zip: clean
 		-x "$(PLUGINNAME)/test_data/*" \
 		-x "$(PLUGINNAME)/vendor/sbanks/pyproject.toml" \
 		-x "$(PLUGINNAME)/vendor/sbanks/requirements.txt"
-	@echo "Created: $(PLUGINNAME).zip"
+	@echo "Created: $(ZIPNAME)"
 
 deploy: clean
 	@echo
