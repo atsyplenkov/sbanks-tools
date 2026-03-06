@@ -27,7 +27,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install numpy scipy pytest
-          pip install ./arcgis/vendor/sbanks-lib
+          pip install ./arcgis/vendor/sbanks
 
       - name: Run tests
         working-directory: arcgis

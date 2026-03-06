@@ -29,9 +29,9 @@ __copyright__ = "(C) 2026 by Anatoly Tsyplenkov"
 import os
 import sys
 
-# Patch sys.path to include vendor/sbanks-lib for sbanks_core imports
+# Patch sys.path to include vendor/sbanks for sbanks imports
 _current_dir = os.path.dirname(os.path.abspath(__file__))
-_vendor_dir = os.path.join(_current_dir, "vendor", "sbanks-lib")
+_vendor_dir = os.path.join(_current_dir, "vendor", "sbanks")
 if _vendor_dir not in sys.path:
     sys.path.insert(0, _vendor_dir)
 

@@ -22,8 +22,8 @@ jobs:
         with:
           submodules: recursive
 
-      - name: Install sbanks_core
-        run: pip install ./qgis/sbanks/vendor/sbanks-lib --break-system-packages
+      - name: Install sbanks
+        run: pip install ./qgis/sbanks_plugin/vendor/sbanks --break-system-packages
 
       - name: Install test dependencies
         run: pip install pytest --break-system-packages

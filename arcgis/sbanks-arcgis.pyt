@@ -13,18 +13,18 @@ import sys
 import arcpy
 import numpy as np
 
-# Patch sys.path to include vendor/sbanks-lib
+# Patch sys.path to include vendor/sbanks
 _current_dir = os.path.dirname(os.path.abspath(__file__))
-_vendor_dir = os.path.join(_current_dir, 'vendor', 'sbanks-lib')
+_vendor_dir = os.path.join(_current_dir, 'vendor', 'sbanks')
 if _vendor_dir not in sys.path:
     sys.path.insert(0, _vendor_dir)
 
-from sbanks_core.whittaker import WhittakerSmoother
-from sbanks_core.savgol import (
+from sbanks.whittaker import WhittakerSmoother
+from sbanks.savgol import (
     smooth_open_geometry,
     smooth_closed_geometry,
 )
-from sbanks_core.geometry import (
+from sbanks.geometry import (
     calculate_cumulative_distances,
     apply_antihook_padding,
     apply_ring_padding,

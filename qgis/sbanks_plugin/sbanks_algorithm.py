@@ -51,10 +51,10 @@ from qgis.core import (
 )
 from qgis.PyQt.QtCore import QCoreApplication
 from qgis.PyQt.QtGui import QIcon
-from sbanks_core.geometry import resample_and_smooth, snap_endpoints
+from sbanks.geometry import resample_and_smooth, snap_endpoints
 
-# Import from sbanks_core library
-from sbanks_core.savgol import (
+# Import from sbanks library
+from sbanks.savgol import (
     smooth_closed_geometry,
     smooth_open_geometry,
 )

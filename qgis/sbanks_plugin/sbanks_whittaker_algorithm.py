@@ -51,7 +51,7 @@ from qgis.core import (
 )
 from qgis.PyQt.QtCore import QCoreApplication
 from qgis.PyQt.QtGui import QIcon
-from sbanks_core.geometry import (
+from sbanks.geometry import (
     apply_antihook_padding,
     apply_ring_padding,
     calculate_cumulative_distances,
@@ -59,8 +59,8 @@ from sbanks_core.geometry import (
     snap_endpoints,
 )
 
-# Import from sbanks_core library
-from sbanks_core.whittaker import WhittakerSmoother
+# Import from sbanks library
+from sbanks.whittaker import WhittakerSmoother
 
 
 class WhittakerAlgorithm(QgsProcessingAlgorithm):
@@ -375,16 +375,16 @@ class WhittakerAlgorithm(QgsProcessingAlgorithm):
         x_start, y_start = x[0], y[0]
         x_end, y_end = x[-1], y[-1]
 
-        # Calculate cumulative distances using sbanks_core
+        # Calculate cumulative distances using sbanks
         distances = calculate_cumulative_distances(x, y, is_geographic)
 
-        # Anti-hook padding using sbanks_core
+        # Anti-hook padding using sbanks
         pad_count = max(5, n_points // 4)
         x_extended, y_extended, dist_extended = apply_antihook_padding(
             x, y, distances, pad_count
         )
 
-        # Apply Whittaker-Eilers filter using sbanks_core
+        # Apply Whittaker-Eilers filter using sbanks
         try:
             smoother = WhittakerSmoother(
                 lmbda=lmbda,
@@ -406,12 +406,12 @@ class WhittakerAlgorithm(QgsProcessingAlgorithm):
         x_smooth = x_smooth[pad_count:-pad_count]
         y_smooth = y_smooth[pad_count:-pad_count]
 
-        # Snap endpoints using sbanks_core
+        # Snap endpoints using sbanks
         x_smooth, y_smooth = snap_endpoints(
             x_smooth, y_smooth, x_start, y_start, x_end, y_end
         )
 
-        # Optional resampling using sbanks_core
+        # Optional resampling using sbanks
         if use_resampling:
             x_smooth, y_smooth = resample_and_smooth(
                 x_smooth, y_smooth, sampling_distance, smoothing_factor
@@ -513,20 +513,20 @@ class WhittakerAlgorithm(QgsProcessingAlgorithm):
 
         n_ring = len(x)
 
-        # Calculate distances including the closing segment using sbanks_core
+        # Calculate distances including the closing segment using sbanks
         distances = calculate_cumulative_distances(
             np.append(x, x[0]), np.append(y, y[0]), is_geographic
         )
         ring_distances = distances[:-1]
         total_perimeter = distances[-1]
 
-        # Circular padding using sbanks_core
+        # Circular padding using sbanks
         pad_count = max(5, n_ring // 4)
         x_extended, y_extended, dist_extended = apply_ring_padding(
             x, y, ring_distances, pad_count, total_perimeter
         )
 
-        # Apply Whittaker-Eilers filter using sbanks_core
+        # Apply Whittaker-Eilers filter using sbanks
         try:
             smoother = WhittakerSmoother(
                 lmbda=lmbda,
@@ -548,7 +548,7 @@ class WhittakerAlgorithm(QgsProcessingAlgorithm):
         x_smooth = x_smooth[pad_count:-pad_count]
         y_smooth = y_smooth[pad_count:-pad_count]
 
-        # Optional resampling using sbanks_core
+        # Optional resampling using sbanks
         if use_resampling:
             # For closed rings, append first point for spline continuity
             x_closed = np.append(x_smooth, x_smooth[0])

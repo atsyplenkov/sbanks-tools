@@ -2,25 +2,25 @@
 """
 Tests for the ArcGIS Sbanks toolbox.
 
-These tests can be run without ArcGIS to verify sbanks_core integration.
+These tests can be run without ArcGIS to verify sbanks integration.
 Full toolbox tests require ArcGIS Pro environment.
 """
 
 
-def test_sbanks_core_import():
-    """Test that sbanks_core can be imported."""
+def test_sbanks_import():
+    """Test that sbanks can be imported."""
     import sys
     import os
 
     # Add vendor path (simulating what the toolbox does)
     current_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    vendor_dir = os.path.join(current_dir, "vendor", "sbanks-lib")
+    vendor_dir = os.path.join(current_dir, "vendor", "sbanks")
     if vendor_dir not in sys.path:
         sys.path.insert(0, vendor_dir)
 
-    from sbanks_core import WhittakerSmoother
-    from sbanks_core import smooth_open_geometry, smooth_closed_geometry
-    from sbanks_core.geometry import haversine_distance, calculate_cumulative_distances
+    from sbanks import WhittakerSmoother
+    from sbanks import smooth_open_geometry, smooth_closed_geometry
+    from sbanks.geometry import haversine_distance, calculate_cumulative_distances
 
     assert WhittakerSmoother is not None
     assert smooth_open_geometry is not None
@@ -29,10 +29,10 @@ def test_sbanks_core_import():
     assert calculate_cumulative_distances is not None
 
 
-def test_sbanks_core_basic_functionality():
-    """Test basic functionality of sbanks_core without ArcGIS."""
+def test_sbanks_basic_functionality():
+    """Test basic functionality of sbanks without ArcGIS."""
     import numpy as np
-    from sbanks_core import WhittakerSmoother, smooth_open_geometry
+    from sbanks import WhittakerSmoother, smooth_open_geometry
 
     # Test WhittakerSmoother
     n = 50

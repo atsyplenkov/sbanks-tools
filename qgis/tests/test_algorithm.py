@@ -4,17 +4,17 @@ Tests for the QGIS Sbanks algorithms.
 
 These tests require a QGIS environment to run.
 Use: apptainer exec ~/Soft/qgis_ltr.sif bash -c \
-     "cd /path/to/sbanks-tools/qgis && PYTHONPATH=. pytest -v tests/"
+     "cd /path/to/sbanks-plugins/qgis && PYTHONPATH=. pytest -v tests/"
 """
 
 import pytest
 
 
-def test_sbanks_core_import():
-    """Test that sbanks_core can be imported."""
-    from sbanks_core import WhittakerSmoother
-    from sbanks_core import smooth_open_geometry, smooth_closed_geometry
-    from sbanks_core.geometry import haversine_distance, calculate_cumulative_distances
+def test_sbanks_import():
+    """Test that sbanks can be imported."""
+    from sbanks import WhittakerSmoother
+    from sbanks import smooth_open_geometry, smooth_closed_geometry
+    from sbanks.geometry import haversine_distance, calculate_cumulative_distances
 
     assert WhittakerSmoother is not None
     assert smooth_open_geometry is not None
@@ -23,10 +23,10 @@ def test_sbanks_core_import():
     assert calculate_cumulative_distances is not None
 
 
-def test_sbanks_core_basic_functionality():
-    """Test basic functionality of sbanks_core without QGIS."""
+def test_sbanks_basic_functionality():
+    """Test basic functionality of sbanks without QGIS."""
     import numpy as np
-    from sbanks_core import WhittakerSmoother, smooth_open_geometry
+    from sbanks import WhittakerSmoother, smooth_open_geometry
 
     # Test WhittakerSmoother
     n = 50
@@ -56,16 +56,16 @@ class TestQGISAlgorithms:
 
     def test_algorithm_import(self):
         """Test that algorithm classes can be imported."""
-        from sbanks.sbanks_algorithm import SbanksAlgorithm
-        from sbanks.sbanks_whittaker_algorithm import WhittakerAlgorithm
+        from sbanks_plugin.sbanks_algorithm import SbanksAlgorithm
+        from sbanks_plugin.sbanks_whittaker_algorithm import WhittakerAlgorithm
 
         assert SbanksAlgorithm is not None
         assert WhittakerAlgorithm is not None
 
     def test_algorithm_instantiation(self):
         """Test that algorithms can be instantiated."""
-        from sbanks.sbanks_algorithm import SbanksAlgorithm
-        from sbanks.sbanks_whittaker_algorithm import WhittakerAlgorithm
+        from sbanks_plugin.sbanks_algorithm import SbanksAlgorithm
+        from sbanks_plugin.sbanks_whittaker_algorithm import WhittakerAlgorithm
 
         savgol = SbanksAlgorithm()
         assert savgol.name() == "savgol_filter"

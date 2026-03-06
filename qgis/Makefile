@@ -17,7 +17,7 @@
 # *																		 *
 # ***************************************************************************/
 
-PLUGINNAME = sbanks
+PLUGINNAME = sbanks_plugin
 
 # QGIS plugin directory (Linux default)
 QGISDIR = $(HOME)/.local/share/QGIS/QGIS3/profiles/default/python/plugins
@@ -65,8 +65,8 @@ zip: clean
 		-x "*/.pytest_cache/*" \
 		-x "*.egg-info/*" \
 		-x "$(PLUGINNAME)/test_data/*" \
-		-x "$(PLUGINNAME)/vendor/sbanks-lib/pyproject.toml" \
-		-x "$(PLUGINNAME)/vendor/sbanks-lib/requirements.txt"
+		-x "$(PLUGINNAME)/vendor/sbanks/pyproject.toml" \
+		-x "$(PLUGINNAME)/vendor/sbanks/requirements.txt"
 	@echo "Created: $(PLUGINNAME).zip"
 
 deploy: clean
@@ -83,9 +83,9 @@ deploy: clean
 	find $(QGISDIR)/$(PLUGINNAME) -name ".git" -exec rm -rf {} + 2>/dev/null || true
 	find $(QGISDIR)/$(PLUGINNAME) -name ".gitignore" -delete 2>/dev/null || true
 	rm -rf $(QGISDIR)/$(PLUGINNAME)/test_data 2>/dev/null || true
-	rm -rf $(QGISDIR)/$(PLUGINNAME)/vendor/sbanks-lib/tests 2>/dev/null || true
-	rm -f $(QGISDIR)/$(PLUGINNAME)/vendor/sbanks-lib/pyproject.toml 2>/dev/null || true
-	rm -f $(QGISDIR)/$(PLUGINNAME)/vendor/sbanks-lib/requirements.txt 2>/dev/null || true
+	rm -rf $(QGISDIR)/$(PLUGINNAME)/vendor/sbanks/tests 2>/dev/null || true
+	rm -f $(QGISDIR)/$(PLUGINNAME)/vendor/sbanks/pyproject.toml 2>/dev/null || true
+	rm -f $(QGISDIR)/$(PLUGINNAME)/vendor/sbanks/requirements.txt 2>/dev/null || true
 	@echo "Plugin deployed to: $(QGISDIR)/$(PLUGINNAME)"
 
 derase:
@@ -100,7 +100,7 @@ test:
 	@echo "Running tests..."
 	@echo "----------------"
 	apptainer exec ~/Soft/qgis_ltr.sif bash -c \
-		"cd /home/ats/Projects/sbanks/sbanks-tools/qgis && PYTHONPATH=. pytest -v tests/"
+		"cd /home/ats/Projects/sbanks/sbanks-plugins/qgis && PYTHONPATH=. pytest -v tests/"
 
 transupdate:
 	@echo "Updating Russian translation source (.ts)..."
